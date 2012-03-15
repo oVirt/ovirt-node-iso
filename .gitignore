@@ -1,1 +1,12 @@
 *.iso
+ovirt-node-iso.spec
+.*.swp
+*~
+aclocal.m4
+autom4te.cache
+config.log
+config.status
+configure
+install-sh
+missing
+*.tar.gz

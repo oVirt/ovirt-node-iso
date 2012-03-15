@@ -1,10 +1,11 @@
 %define product oVirt Node
 %define product_short oVirt Node
 %define product_code ovirt-node
+%define build_counter .1
 
 Name:		ovirt-node-iso
-Version:	2.2.2
-Release:	2.2%{?dist}
+Version:	@VERSION@
+Release:	1%{?build_counter}%{?dist}
 Summary:	%{product} ISO Image
 BuildArch:  noarch
 Source1:    %{product_code}-image-%{version}-%{release}.iso
