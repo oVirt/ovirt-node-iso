@@ -1,7 +1,7 @@
 %define product oVirt Node
 %define product_short oVirt Node
 %define product_code ovirt-node
-%define build_counter .1
+%define build_counter @BUILD_NUMBER@
 
 Name:		ovirt-node-iso
 Version:	@VERSION@
