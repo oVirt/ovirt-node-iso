@@ -30,10 +30,10 @@ OVIRT_LOCAL_REPO=file://${OVIRT_CACHE_DIR}/ovirt
 export OVIRT_CACHE_DIR OVIRT_LOCAL_REPO
 OVIRT_NODE_TOOLS_RPM=$(ls -t ${OVIRT_CACHE_DIR}/ovirt/noarch/ovirt-node-tools* | head -n1)
 
-# ovirt-node-tools rpm should be copied to $OVIRT_CACHE_DIR/ovirt/noarch
+# ovirt-node-tools rpm should be copied to ${OVIRT_CACHE_DIR}/ovirt/noarch
 mkdir ${WORKSPACE}/ovirt-node-tools
 cd ${WORKSPACE}/ovirt-node-tools
-rpm2cpio $OVIRT_NODE_TOOlS_RPM | pax -r
+rpm2cpio ${OVIRT_NODE_TOOLS_RPM} | pax -r
 cd ${WORKSPACE}
 
 RECIPE_DIR=${WORKSPACE}/ovirt-node-tools/usr/share/ovirt-node-tools
