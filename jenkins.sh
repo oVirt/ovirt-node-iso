@@ -65,7 +65,7 @@ cp $ISO_DIR/isolinux/manifest-file.txt.bz2 ${WORKSPACE}
 chmod 666 ${WORKSPACE}/manifest-*txt*
 sudo umount ${ISO_DIR}
 rmdir ${ISO_DIR}
-egrep '^kernel|kvm|libvirt|^vdsm|^ovirt-node|^fence-agents' manifest-srpm.txt | sed 's/\.src\.rpm//' >> ovirt-node-iso.mini-manifest.txt
+egrep '^kernel|kvm|libvirt|^vdsm|^ovirt-node|^fence-agents' manifest-srpm.txt | sed 's/\.src\.rpm//' > ovirt-node-iso.mini-manifest.txt
 
 # Add additional information to mini-manifest.txt
 echo "======================================================" >> ovirt-node-iso.mini-manifest.txt
