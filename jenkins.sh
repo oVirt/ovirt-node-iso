@@ -23,7 +23,7 @@ set -v
 
 #Cleanup
 test -f Makefile && make -k distclean
-rm -rf ${WORKSPACE}/ovirt-node-tools
+rm -rf ${WORKSPACE}/ovirt-node-tools ${WORKSPACE}/*iso ${WORKSPACE}/rpmbuild ${WORKSPACE}/manifest*
 
 OVIRT_CACHE_DIR=${WORKSPACE}/ovirt-cache
 OVIRT_LOCAL_REPO=file://${OVIRT_CACHE_DIR}/ovirt
@@ -45,3 +45,48 @@ cp ${WORKSPACE}/ovirt-node-tools/usr/sbin/node-creator ${WORKSPACE}
 
 make iso
 make publish
+
+ISO_NAME=$(make verrel).iso
+# Get iso details
+ISO_DIR=$(mktemp -d)
+sudo mount -o loop ${ISO_NAME} $ISO_DIR
+cp $ISO_DIR/isolinux/manifest-srpm.txt ${WORKSPACE}
+cp $ISO_DIR/isolinux/manifest-rpm.txt ${WORKSPACE}
+cp $ISO_DIR/isolinux/manifest-file.txt.bz2 ${WORKSPACE}
+chmod 666 ${WORKSPACE}/manifest-*txt*
+sudo umount ${ISO_DIR}
+rmdir ${ISO_DIR}
+egrep '^kernel|kvm|libvirt|^vdsm|^ovirt-node|^fence-agents' manifest-srpm.txt | sed 's/\.src\.rpm//' >> ovirt-node-iso.mini-manifest.txt
+
+# Add additional information to mini-manifest.txt
+echo "======================================================" >> ovirt-node-iso.mini-manifest.txt
+echo "ovirt-node-tools used:  $(basename ${OVIRT_NODE_TOOLS_RPM}) " >> ovirt-node-iso.mini-manifest.txt
+
+
+# Check size of iso and report in mini-manifest.txt
+echo "======================================================" >> ovirt-node-iso.mini-manifest.txt
+size=$(ls -l ${ISO_NAME} | awk '{print $5}')
+human_size=$(ls -lh ${ISO_NAME} | awk '{print $5}')
+echo "    Iso Size:  $size  ($human_size)" >> ovirt-node-iso.mini-manifest.txt
+
+old_size=""
+old_human_size=""
+mkdir old_artifacts
+cd old_artifacts
+wget ${JOB_URL}/lastSuccessfulBuild/artifact/*zip*/archive.zip
+unzip archive.zip
+if [ -e ${WORKSPACE}/old_artifacts/archive/ovirt-node-iso*iso ]; then
+    old_size=$(ls -l ${WORKSPACE}/old_artifacts/archive/ovirt-node-iso*iso | awk '{print $5}')
+    old_human_size=$(ls -lh ${WORKSPACE}/old_artifacts/archive/ovirt-node-iso*iso | awk '{print $5}')
+    echo "Old Iso Size:  $old_size  ($old_human_size)" >> ovirt-node-iso.mini-manifest.txt
+else
+    echo "No old iso found for compairson">> ovirt-node-iso.mini-manifest.txt
+fi
+cd ${WORKSPACE}
+rm -rf old_artifacts
+# md5 and sha256sums
+echo "MD5SUM:  $(md5sum ${ISO_NAME} |awk '{print $1}')" >> ovirt-node-iso.mini-manifest.txt
+echo "SHA256SUM:  $(sha256sum ${ISO_NAME} |awk '{print $1}')" >> ovirt-node-iso.mini-manifest.txt
+
+echo "======================================================" >> ovirt-node-iso.mini-manifest.txt
+echo "livecd-tools version:  $(rpm -qa livecd-tools)" >> ovirt-node-iso.mini-manifest.txt
