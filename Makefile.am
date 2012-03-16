@@ -27,19 +27,16 @@ DISTRO            = @DISTRO@
 BUILD_TYPE        ?= STABLE
 CENTOS            = @CENTOS@
 ARCH              = $(shell rpm --eval '%{_arch}')
-RELEASE 		  := $(shell rpm -q --qf "%{RELEASE}\n" --specfile ./ovirt-node-iso.spec | head -n1)
+RELEASE 		  := $(shell rpm -q --qf "%{RELEASE}\n" --define "BUILD_NUMBER $(BUILD_NUMBER)" --specfile ./ovirt-node-iso.spec | head -n1)
 RECIPE_DIR 		  = @RECIPES@
 OVIRT_CACHE_DIR	?= $(HOME)/ovirt-cache
 
-DISTCLEANFILES = *ks             \
-	aclocal.m4                   \
-	Makefile.in                  \
-	config.log                   \
-	missing                      \
-	install-sh                   \
-	$(PACKAGE)-$(VERSION).tar.gz \
-	configure
+EXTRA_DIST = \
+	ovirt-node-iso.spec.in       \
+	ovirt-node-iso.spec          \
+	$(PACKAGE)-$(VERSION)-$(RELEASE).iso
 
+DISTCLEANFILES = $(PACKAGE)-$(VERSION).tar.gz
 
 # Need to find node-creator script
 # Default to RECIPE_DIR/node-creator
@@ -53,11 +50,11 @@ _ovirt_dev = \
  $(shell grep -q '^[[:space:]]*Release:[[:space:]]*0' \
    $(top_srcdir)/*.spec && echo 1 || :)
 
-rpms: iso
-	rpmbuild $(RPM_FLAGS) -ta $(distdir).tar.gz
+rpms: dist
+	rpmbuild --define "BUILD_NUMBER $(BUILD_NUMBER)" $(RPM_FLAGS) -ta $(distdir).tar.gz
 
-srpms: iso
-	rpmbuild $(RPM_FLAGS) -ta $(distdir).tar.gz
+srpms: dist
+	rpmbuild --define "BUILD_NUMBER $(BUILD_NUMBER)" $(RPM_FLAGS) -ts $(distdir).tar.gz
 
 publish: rpms
 	mkdir -p $(OVIRT_CACHE_DIR)
@@ -86,6 +83,7 @@ version.ks:
 $(PACKAGE).$(PKG_FMT) iso: kickstarts version.ks repos.ks
 	test ! -e "$(PACKAGE_NAME)-$(VERSION)-$(RELEASE).iso" || ( echo "ERROR: $(PACKAGE_NAME)-$(VERSION)-$(RELEASE).iso already exists." && exit 1 )
 	$(NODE_CREATOR) $(RECIPE)
+	test -e "$(PACKAGE_NAME).iso" || ( echo "ERROR: ISO build failed." && exit 1 )
 	mv $(PACKAGE_NAME).iso $(PACKAGE_NAME)-$(VERSION)-$(RELEASE).iso
 
 verrel:

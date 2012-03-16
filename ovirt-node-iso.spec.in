@@ -1,14 +1,14 @@
-%define product oVirt Node
-%define product_short oVirt Node
-%define product_code ovirt-node
-%define build_counter @BUILD_NUMBER@
+%define product oVirt Node ISO
+%define product_short oVirt Node ISO
+%define product_code ovirt-node-iso
+%define build_counter %(test -n "%{?BUILD_NUMBER}" && echo "%{?BUILD_NUMBER}" || echo @BUILD_NUMBER@ )
 
 Name:		ovirt-node-iso
 Version:	@VERSION@
 Release:	1%{?build_counter}%{?dist}
 Summary:	%{product} ISO Image
 BuildArch:  noarch
-Source1:    %{product_code}-image-%{version}-%{release}.iso
+Source1:    %{product_code}-%{version}-%{release}.iso
 Group:		Applications/System
 License:	License: AFL and BSD and (BSD or GPLv2+) and BSD with advertising and Boost and GFDL and GPL and GPL+ and (GPL+ or Artistic) and GPLv1+ and GPLv2 and (GPLv2 or BSD) and (GPLv2 or GPLv3) and GPLv2 with exceptions and GPLv2+ and (GPLv2+ or AFL) and GPLv2+ with exceptions and GPLv3 and GPLv3+ and GPLv3+ with exceptions and IJG and ISC and LGPLv2 and LGPLv2+ and (LGPLv2+ or BSD) and (LGPLv2+ or MIT) and LGPLv2+ with exceptions and LGPLv2/GPLv2 and LGPLv3 and LGPLv3+ and MIT and (MIT or LGPLv2+ or BSD) and (MPLv1.1 or GPLv2+ or LGPLv2+) and Open Publication and OpenLDAP and OpenSSL and Public Domain and Python and (Python or ZPLv2.0) and Rdisc and Redistributable, no modification permitted and SISSL and Vim and zlib
 URL:		http://ovirt.org/
@@ -48,7 +48,7 @@ for ver in %{app_root}/version-*txt; do
     fi
 done
 ln -snf %{app_root}/${nvr}.txt  %{app_root}/version.txt
-ln -snf %{app_root}/rhevh-${nvr#*-}.iso %{app_root}/%{name}.iso
+ln -snf %{app_root}/ovirt-node-iso-${nvr#*-}.iso %{app_root}/%{name}.iso
 
 %preun
 #first remove all symlinks
