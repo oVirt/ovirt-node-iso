@@ -63,9 +63,9 @@ publish: rpms
 	createrepo $(OVIRT_CACHE_DIR)/ovirt
 
 
-$(PACKAGE).ks: repos.ks version.ks
+$(PACKAGE).ks: repos.ks
 
-kickstarts: node-creator
+kickstarts: version.ks node-creator
 	cp $(RECIPE_DIR)/*.ks .
 	ksflatten -c $(NAME0).ks -o $(PACKAGE).ks
 
@@ -95,4 +95,4 @@ node-creator:
 
 all: $(PACKAGE).ks 
 
-.PHONY: repos.ks version.ks $(PACKAGE).ks
+.PHONY: $(PACKAGE).ks
