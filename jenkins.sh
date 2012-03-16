@@ -82,16 +82,19 @@ old_size=""
 old_human_size=""
 mkdir -p old_artifacts
 cd old_artifacts
-wget ${JOB_URL}/lastSuccessfulBuild/artifact/*zip*/archive.zip || :
-unzip archive.zip
-if [ -e ${WORKSPACE}/old_artifacts/archive/ovirt-node-iso*iso ]; then
-    old_size=$(ls -l ${WORKSPACE}/old_artifacts/archive/ovirt-node-iso*iso | awk '{print $5}')
-    old_human_size=$(ls -lh ${WORKSPACE}/old_artifacts/archive/ovirt-node-iso*iso | awk '{print $5}')
-    echo "Old Iso Size:  $old_size  ($old_human_size)" >> ovirt-node-iso.mini-manifest.txt
+if wget ${JOB_URL}/lastSuccessfulBuild/artifact/*zip*/archive.zip; then
+    cd $WORKSPACE
+    unzip archive.zip
+    if [ -e ${WORKSPACE}/old_artifacts/archive/ovirt-node-iso*iso ]; then
+        old_size=$(ls -l ${WORKSPACE}/old_artifacts/archive/ovirt-node-iso*iso | awk '{print $5}')
+        old_human_size=$(ls -lh ${WORKSPACE}/old_artifacts/archive/ovirt-node-iso*iso | awk '{print $5}')
+        echo "Old Iso Size:  $old_size  ($old_human_size)" >> ovirt-node-iso.mini-manifest.txt
+    else
+        echo "No old iso found for compairson">> ovirt-node-iso.mini-manifest.txt
 else
-    echo "No old iso found for compairson">> ovirt-node-iso.mini-manifest.txt
+    cd $WORKSPACE
+    echo "No previous build archive found for old iso compairson">> ovirt-node-iso.mini-manifest.txt
 fi
-cd ${WORKSPACE}
 rm -rf old_artifacts
 # md5 and sha256sums
 echo "MD5SUM:  $(md5sum ${ISO_NAME} |awk '{print $1}')" >> ovirt-node-iso.mini-manifest.txt
