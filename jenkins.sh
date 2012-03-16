@@ -23,7 +23,7 @@ set -v
 
 #Cleanup
 test -f Makefile && make -k distclean
-rm -rf ${WORKSPACE}/ovirt-node-tools ${WORKSPACE}/*iso ${WORKSPACE}/rpmbuild ${WORKSPACE}/manifest*
+rm -rf ${WORKSPACE}/ovirt-node-tools ${WORKSPACE}/*iso ${WORKSPACE}/rpmbuild ${WORKSPACE}/manifest* ${WORKSPACE}/old_artifacts
 
 OVIRT_CACHE_DIR=${WORKSPACE}/ovirt-cache
 OVIRT_LOCAL_REPO=file://${OVIRT_CACHE_DIR}/ovirt
@@ -79,7 +79,7 @@ echo "    Iso Size:  $size  ($human_size)" >> ovirt-node-iso.mini-manifest.txt
 
 old_size=""
 old_human_size=""
-mkdir old_artifacts
+mkdir -p old_artifacts
 cd old_artifacts
 wget ${JOB_URL}/lastSuccessfulBuild/artifact/*zip*/archive.zip
 unzip archive.zip
