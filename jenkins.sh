@@ -81,7 +81,7 @@ old_size=""
 old_human_size=""
 mkdir -p old_artifacts
 cd old_artifacts
-wget ${JOB_URL}/lastSuccessfulBuild/artifact/*zip*/archive.zip
+wget ${JOB_URL}/lastSuccessfulBuild/artifact/*zip*/archive.zip || :
 unzip archive.zip
 if [ -e ${WORKSPACE}/old_artifacts/archive/ovirt-node-iso*iso ]; then
     old_size=$(ls -l ${WORKSPACE}/old_artifacts/archive/ovirt-node-iso*iso | awk '{print $5}')
