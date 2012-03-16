@@ -91,6 +91,7 @@ if wget ${JOB_URL}/lastSuccessfulBuild/artifact/*zip*/archive.zip; then
         echo "Old Iso Size:  $old_size  ($old_human_size)" >> ovirt-node-iso.mini-manifest.txt
     else
         echo "No old iso found for compairson">> ovirt-node-iso.mini-manifest.txt
+    fi
 else
     cd $WORKSPACE
     echo "No previous build archive found for old iso compairson">> ovirt-node-iso.mini-manifest.txt
