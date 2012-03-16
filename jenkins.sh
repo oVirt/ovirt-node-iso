@@ -19,7 +19,27 @@
 # also available at http://www.gnu.org/copyleft/gpl.html.
 
 set -e
+set -v
 
-rpmbuild --nodeps --define "extra_release .auto${BUILD_NUBMER}" \
-    --define "_sourcedir ${PWD}" --define "_specdir ${PWD}" \
-    -ba --clean ovirt-node-iso.spec
+#Cleanup
+test -f Makefile && make -k distclean
+rm -rf ${WORKSPACE}/ovirt-node-tools
+
+OVIRT_CACHE_DIR=${WORKSPACE}/ovirt-cache
+OVIRT_LOCAL_REPO=file://${OVIRT_CACHE_DIR}/ovirt
+export OVIRT_CACHE_DIR OVIRT_LOCAL_REPO
+OVIRT_NODE_TOOLS_RPM=$(ls -t ${OVIRT_CACHE_DIR}/ovirt/noarch/ovirt-node-tools* | head -n1)
+
+# ovirt-node-tools rpm should be copied to $OVIRT_CACHE_DIR/ovirt/noarch
+mkdir ${WORKSPACE}/ovirt-node-tools
+cd ${WORKSPACE}/ovirt-node-tools
+rpm2cpio $OVIRT_NODE_TOOlS_RPM | pax -r
+cd ${WORKSPACE}
+
+RECIPE_DIR=${WORKSPACE}/ovirt-node-tools/usr/share/ovirt-node-tools
+cp ${WORKSPACE}/ovirt-node-tools/usr/sbin/node-creator ${WORKSPACE}
+
+./autogen.sh --with-recipe=${RECIPE_DIR} --with-build-number=${BUILD_NUMBER}
+
+make iso
+make publish
