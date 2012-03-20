@@ -29,7 +29,7 @@ OVIRT_CACHE_DIR=${WORKSPACE}/ovirt-cache
 OVIRT_LOCAL_REPO=file://${OVIRT_CACHE_DIR}/ovirt
 export OVIRT_CACHE_DIR OVIRT_LOCAL_REPO
 OVIRT_NODE_TOOLS_RPM=$(ls -t ${OVIRT_CACHE_DIR}/ovirt/noarch/ovirt-node-tools* | head -n1)
-HOME=${WORKSPACE}
+export HOME=${WORKSPACE}
 
 createrepo ${OVIRT_CACHE_DIR}/ovirt
 
