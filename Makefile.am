@@ -65,7 +65,10 @@ publish: rpms
 
 $(PACKAGE).ks: repos.ks
 
-kickstarts: version.ks node-creator
+clean_ks:
+	rm -f *.ks
+
+kickstarts: clean_ks version.ks node-creator
 	cp $(RECIPE_DIR)/*.ks .
 	ksflatten -c $(NAME0).ks -o $(PACKAGE).ks
 
@@ -81,9 +84,9 @@ version.ks:
 	) > $@
 
 $(PACKAGE).$(PKG_FMT) iso: kickstarts version.ks repos.ks
-	test ! -e "$(PACKAGE_NAME)-$(VERSION)-$(RELEASE).iso" || ( echo "ERROR: $(PACKAGE_NAME)-$(VERSION)-$(RELEASE).iso already exists." && exit 1 )
+	@test ! -e "$(PACKAGE_NAME)-$(VERSION)-$(RELEASE).iso" || ( @echo "ERROR: $(PACKAGE_NAME)-$(VERSION)-$(RELEASE).iso already exists." && exit 1 )
 	$(NODE_CREATOR) $(RECIPE)
-	test -e "$(PACKAGE_NAME).iso" || ( echo "ERROR: ISO build failed." && exit 1 )
+	@test -e "$(PACKAGE_NAME).iso" || ( @echo "ERROR: ISO build failed." && exit 1 )
 	mv $(PACKAGE_NAME).iso $(PACKAGE_NAME)-$(VERSION)-$(RELEASE).iso
 
 verrel:
@@ -93,6 +96,6 @@ node-creator:
 	@test -n "${NODE_CREATOR}" || ( @echo "No node-creator script found" && exit 1 )
 	@echo "Node Creator script is:  ${NODE_CREATOR}"
 
-all: $(PACKAGE).ks 
+all: $(PACKAGE).ks
 
 .PHONY: $(PACKAGE).ks
