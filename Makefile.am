@@ -60,21 +60,22 @@ publish: rpms
 	mkdir -p $(OVIRT_CACHE_DIR)
 	rsync -aq $(shell rpm --eval '%{_rpmdir}')/ $(OVIRT_CACHE_DIR)/ovirt/
 	rsync -aq $(shell rpm --eval '%{_srcrpmdir}')/ $(OVIRT_CACHE_DIR)/ovirt/src
+	rsync -aq $(PACKAGE_NAME)-$(VERSION)-$(RELEASE).iso $(OVIRT_CACHE_DIR)/ovirt/binary
 	createrepo $(OVIRT_CACHE_DIR)/ovirt
 
 
-$(PACKAGE).ks: repos.ks
+$(PACKAGE).ks: version.ks
 
 clean_ks:
 	rm -f *.ks
 
-kickstarts: clean_ks version.ks node-creator
+kickstarts: clean_ks node-creator
 	cp $(RECIPE_DIR)/*.ks .
-	ksflatten -c $(NAME0).ks -o $(PACKAGE).ks
+	rm -f version.ks
 
 repos.ks: kickstarts
 
-version.ks:
+version.ks: repos.ks
 	( \
 	    echo "PRODUCT='"$(PRODUCT)"'" ;\
 	    echo "PRODUCT_SHORT='"$(PRODUCT_SHORT)"'" ;\
@@ -82,18 +83,19 @@ version.ks:
 	    echo "VERSION=$(VERSION)" ;\
 	    echo "RELEASE=$(RELEASE)" ;\
 	) > $@
+	ksflatten -c $(NAME0).ks -o $(PACKAGE).ks
 
 $(PACKAGE).$(PKG_FMT) iso: kickstarts version.ks repos.ks
-	@test ! -e "$(PACKAGE_NAME)-$(VERSION)-$(RELEASE).iso" || ( @echo "ERROR: $(PACKAGE_NAME)-$(VERSION)-$(RELEASE).iso already exists." && exit 1 )
+	@test ! -e "$(PACKAGE_NAME)-$(VERSION)-$(RELEASE).iso" || ( echo "ERROR: $(PACKAGE_NAME)-$(VERSION)-$(RELEASE).iso already exists." && exit 1 )
 	$(NODE_CREATOR) $(RECIPE)
-	@test -e "$(PACKAGE_NAME).iso" || ( @echo "ERROR: ISO build failed." && exit 1 )
+	@test -e "$(PACKAGE_NAME).iso" || ( echo "ERROR: ISO build failed." && exit 1 )
 	mv $(PACKAGE_NAME).iso $(PACKAGE_NAME)-$(VERSION)-$(RELEASE).iso
 
 verrel:
 	@echo ${PACKAGE_NAME}-${VERSION}-${RELEASE}
 
 node-creator:
-	@test -n "${NODE_CREATOR}" || ( @echo "No node-creator script found" && exit 1 )
+	@test -n "${NODE_CREATOR}" || ( echo "No node-creator script found" && exit 1 )
 	@echo "Node Creator script is:  ${NODE_CREATOR}"
 
 all: $(PACKAGE).ks
