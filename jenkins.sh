@@ -23,32 +23,41 @@ set -v
 
 #Cleanup
 test -f Makefile && make -k distclean
-rm -rf ${WORKSPACE}/ovirt-node-tools ${WORKSPACE}/*iso ${WORKSPACE}/rpmbuild ${WORKSPACE}/manifest* ${WORKSPACE}/old_artifacts
+rm -rf ${WORKSPACE}/ovirt-node-tools ${WORKSPACE}/*iso ${WORKSPACE}/rpmbuild ${WORKSPACE}/manifest* ${WORKSPACE}/old_artifacts ${WORKSPACE}/ovirt-node-recipe
 
 OVIRT_CACHE_DIR=${WORKSPACE}/ovirt-cache
 OVIRT_LOCAL_REPO=file://${OVIRT_CACHE_DIR}/ovirt
 export OVIRT_CACHE_DIR OVIRT_LOCAL_REPO
-OVIRT_NODE_TOOLS_RPM=$(ls -t ${OVIRT_CACHE_DIR}/ovirt/noarch/ovirt-node-tools* | head -n1)
+if ls ${OVIRT_CACHE_DIR}/ovirt/noarch/ovirt-node-recipe*rpm >/dev/null 2>&1; then
+    RECIPE_RPM_NAME=ovirt-node-recipe
+elif ls ${OVIRT_CACHE_DIR}/ovirt/noarch/ovirt-node-tools*rpm >/dev/null 2>&1; then
+    RECIPE_RPM_NAME=ovirt-node-tools
+else
+    echo "ERROR: no recipe rpm found"
+    exit 4
+fi
+
+OVIRT_NODE_RECIPE_RPM=$(ls -t ${OVIRT_CACHE_DIR}/ovirt/noarch/${RECIPE_RPM_NAME}* | head -n1)
 export HOME=${WORKSPACE}
 
 createrepo ${OVIRT_CACHE_DIR}/ovirt
 
-# ovirt-node-tools rpm should be copied to ${OVIRT_CACHE_DIR}/ovirt/noarch
-mkdir ${WORKSPACE}/ovirt-node-tools
-cd ${WORKSPACE}/ovirt-node-tools
-rpm2cpio ${OVIRT_NODE_TOOLS_RPM} | pax -r
-OVIRT_NODE_TOOLS_RPM=$(basename ${OVIRT_NODE_TOOLS_RPM})
-ONT_NAME=$(echo $OVIRT_NODE_TOOLS_RPM | sed -r 's/^([a-zA-Z0-9\-]+)-([a-zA-Z0-9\.]+)-([a-zA-Z0-9\.]+).noarch.rpm$/\1/')
-ONT_VERSION=$(echo $OVIRT_NODE_TOOLS_RPM | sed -r 's/^([a-zA-Z0-9\-]+)-([a-zA-Z0-9\.]+)-([a-zA-Z0-9\.]+).noarch.rpm$/\2/')
-ONT_RELEASE=$(echo $OVIRT_NODE_TOOLS_RPM | sed -r 's/^([a-zA-Z0-9\-]+)-([a-zA-Z0-9\.]+)-([a-zA-Z0-9\.]+).noarch.rpm$/\3/')
+# ovirt-node recipe rpm should be copied to ${OVIRT_CACHE_DIR}/ovirt/noarch
+mkdir ${WORKSPACE}/${RECIPE_RPM_NAME}
+cd ${WORKSPACE}/${RECIPE_RPM_NAME}
+rpm2cpio ${OVIRT_NODE_RECIPE_RPM} | pax -r
+OVIRT_NODE_RECIPE_RPM=$(basename ${OVIRT_NODE_RECIPE_RPM})
+ONT_NAME=$(echo $OVIRT_NODE_RECIPE_RPM | sed -r 's/^([a-zA-Z0-9\-]+)-([a-zA-Z0-9\.]+)-([a-zA-Z0-9\.]+).noarch.rpm$/\1/')
+ONT_VERSION=$(echo $OVIRT_NODE_RECIPE_RPM | sed -r 's/^([a-zA-Z0-9\-]+)-([a-zA-Z0-9\.]+)-([a-zA-Z0-9\.]+).noarch.rpm$/\2/')
+ONT_RELEASE=$(echo $OVIRT_NODE_RECIPE_RPM | sed -r 's/^([a-zA-Z0-9\-]+)-([a-zA-Z0-9\.]+)-([a-zA-Z0-9\.]+).noarch.rpm$/\3/')
 ONT_BUILD_NUMBER=$(echo $ONT_RELEASE | sed -r 's/^[0-9]+\.(.*)\.fc[0-9]+$/\1./')
 if [ "$ONT_BUILD_NUMBER" = "$ONT_RELEASE" ]; then
     ONT_BUILD_NUMBER=""
 fi
 cd ${WORKSPACE}
 
-RECIPE_DIR=${WORKSPACE}/ovirt-node-tools/usr/share/ovirt-node-tools
-cp ${WORKSPACE}/ovirt-node-tools/usr/sbin/node-creator ${WORKSPACE}
+RECIPE_DIR=${WORKSPACE}/${RECIPE_RPM_NAME}/usr/share/${RECIPE_RPM_NAME}
+cp ${WORKSPACE}/${RECIPE_RPM_NAME}/usr/sbin/node-creator ${WORKSPACE}
 
 ./autogen.sh --with-recipe=${RECIPE_DIR} --with-build-number=${ONT_BUILD_NUMBER}${BUILD_NUMBER}
 
@@ -69,7 +78,7 @@ egrep '^kernel|kvm|libvirt|^vdsm|^ovirt-node|^fence-agents' manifest-srpm.txt | 
 
 # Add additional information to mini-manifest.txt
 echo "======================================================" >> ovirt-node-iso.mini-manifest.txt
-echo "ovirt-node-tools used:  $(basename ${OVIRT_NODE_TOOLS_RPM}) " >> ovirt-node-iso.mini-manifest.txt
+echo "${RECIPE_RPM_NAME} used:  $(basename ${OVIRT_NODE_RECIPE_RPM}) " >> ovirt-node-iso.mini-manifest.txt
 
 
 # Check size of iso and report in mini-manifest.txt
