@@ -20,9 +20,9 @@ if test "$CENTOS"; then
 fi
 
 AC_ARG_WITH([recipe], [AC_HELP_STRING([--with-recipe],
-            [Specify a recipe directory.  Defaults to /usr/share/ovirt-node-tools])],
+            [Specify a recipe directory.  Defaults to /usr/share/ovirt-node-recipe])],
             [RECIPES="$withval"],
-            [RECIPES=/usr/share/ovirt-node-tools])
+            [RECIPES=/usr/share/ovirt-node-recipe])
 AC_SUBST([RECIPES])
 
 AC_ARG_WITH([build_number], [AC_HELP_STRING([--with-build-number],
