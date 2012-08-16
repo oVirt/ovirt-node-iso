@@ -12,3 +12,4 @@ missing
 *.tar.gz
 Makefile.in
 Makefile
+repos.ks
