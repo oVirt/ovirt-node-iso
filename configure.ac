@@ -28,7 +28,7 @@ AC_SUBST([RECIPES])
 AC_ARG_WITH([build_number], [AC_HELP_STRING([--with-build-number],
             [Specify a build number.])],
             [BUILD_NUMBER=".$withval"],
-            [BUILD_NUMBER=.1])
+            [BUILD_NUMBER=.$(date +%Y%m%d%H%M)])
 AC_SUBST([BUILD_NUMBER])
 
 PACKAGE_NAME=ovirt-node-iso
