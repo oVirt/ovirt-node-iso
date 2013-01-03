@@ -56,13 +56,16 @@ if [ "$ONT_BUILD_NUMBER" = "$ONT_RELEASE" ]; then
 fi
 cd ${WORKSPACE}
 
+if [ -z "${BUILD_TYPE}" ]; then
+    BUILD_TYPE="STABLE"
+fi
+
 RECIPE_DIR=${WORKSPACE}/${RECIPE_RPM_NAME}/usr/share/${RECIPE_RPM_NAME}
 cp ${WORKSPACE}/${RECIPE_RPM_NAME}/usr/sbin/node-creator ${WORKSPACE}
 
 ./autogen.sh --with-recipe=${RECIPE_DIR} --with-build-number=${ONT_BUILD_NUMBER}${BUILD_NUMBER}
 
-make iso
-make publish
+make BUILD_TYPE=$BUILD_TYPE iso publish
 
 ISO_NAME=$(make verrel).iso
 # Get iso details
