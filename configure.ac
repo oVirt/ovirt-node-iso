@@ -1,4 +1,4 @@
-AC_INIT([ovirt-node], [2.5.999], [node-devel@ovirt.org])
+AC_INIT([ovirt-node], [2.6.0], [node-devel@ovirt.org])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign -Wno-portability tar-pax])
 
 AC_SUBST([FEDORA],[[`rpm --eval '%{fedora}'|sed 's/[^0-9]//g'`]])
@@ -27,8 +27,8 @@ AC_SUBST([RECIPES])
 
 AC_ARG_WITH([build_number], [AC_HELP_STRING([--with-build-number],
             [Specify a build number.])],
-            [BUILD_NUMBER=".$withval"],
-            [BUILD_NUMBER=.$(date +%Y%m%d%H%M)])
+            [BUILD_NUMBER="$withval"],
+            [BUILD_NUMBER=$(date +%Y%m%d%H%M)])
 AC_SUBST([BUILD_NUMBER])
 
 PACKAGE_NAME=ovirt-node-iso
