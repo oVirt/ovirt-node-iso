@@ -52,7 +52,7 @@ done
 ln -snf %{app_root}/${nvr}.txt  %{app_root}/version.txt
 ln -snf %{app_root}/ovirt-node-iso-${nvr#*-}.iso %{app_root}/%{name}.iso
 if [ -f %{app_root}/vdsm-compatibility-${nvr#*-}.txt ]; then
-    ln -snf %{app_root}/vdsm-compatibility-${nvr#*-}.txt vdsm-compatibility.txt
+    ln -snf %{app_root}/vdsm-compatibility-${nvr#*-}.txt %{app_root}/vdsm-compatibility.txt
 fi
 
 %preun
@@ -81,7 +81,7 @@ if [ ! "$nvr" = "0" ]; then
     ln -snf %{app_root}/${nvr}.txt  %{app_root}/version.txt
     ln -snf %{app_root}/rhevh-${nvr#*-}.iso %{app_root}/%{name}.iso
     if [ -f %{app_root}/vdsm-compatibility-${nvr#*-}.txt ]; then
-        ln -snf %{app_root}/vdsm-compatibility-${nvr#*-}.txt vdsm-compatibility.txt
+        ln -snf %{app_root}/vdsm-compatibility-${nvr#*-}.txt %{app_root}/vdsm-compatibility.txt
     fi
 fi
 
