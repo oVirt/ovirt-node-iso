@@ -50,7 +50,7 @@ OVIRT_NODE_RECIPE_RPM=$(basename ${OVIRT_NODE_RECIPE_RPM})
 ONT_NAME=$(echo $OVIRT_NODE_RECIPE_RPM | sed -r 's/^([a-zA-Z0-9\-]+)-([a-zA-Z0-9\.]+)-([a-zA-Z0-9\.]+).noarch.rpm$/\1/')
 ONT_VERSION=$(echo $OVIRT_NODE_RECIPE_RPM | sed -r 's/^([a-zA-Z0-9\-]+)-([a-zA-Z0-9\.]+)-([a-zA-Z0-9\.]+).noarch.rpm$/\2/')
 ONT_RELEASE=$(echo $OVIRT_NODE_RECIPE_RPM | sed -r 's/^([a-zA-Z0-9\-]+)-([a-zA-Z0-9\.]+)-([a-zA-Z0-9\.]+).noarch.rpm$/\3/')
-ONT_BUILD_NUMBER=$(echo $ONT_RELEASE | sed -r 's/^[0-9]+\.(.*)\.fc[0-9]+$/\1./')
+ONT_BUILD_NUMBER=$(echo $ONT_RELEASE | sed -r 's/^[0-9]+\.(.*)\.[ef][lc][0-9]+$/\1./')
 if [ "$ONT_BUILD_NUMBER" = "$ONT_RELEASE" ]; then
     ONT_BUILD_NUMBER=""
 fi
