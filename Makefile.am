@@ -65,7 +65,7 @@ CENTOS_RELEASE    = 6
 # For Release: 0..., set _ovirt_dev=1 so that we get extra_release.GIT-
 # annotated rpm version strings.
 _ovirt_dev = \
- $(shell grep -q '^[[:space:]]*Release:[[:space:]]*0' \
+ $(shell grep -q '^[[:space:]]*Release:[[:space:]]*[0-9\.]*999' \
    $(top_srcdir)/*.spec && echo 1 || :)
 
 rpms: dist
