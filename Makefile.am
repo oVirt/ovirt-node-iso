@@ -53,9 +53,11 @@ DISTCLEANFILES = $(PACKAGE)-$(VERSION).tar.gz \
 NODE_CREATOR      = $(shell ( test -e $(RECIPE_DIR)/node-creator && echo "$(RECIPE_DIR)/node-creator" ) || ( test -e node-creator && echo "./node-creator" ) || which node-creator 2>/dev/null)
 
 FEDORA_MIRROR     = http://mirrors.fedoraproject.org/mirrorlist
-OVIRT_URL	      = http://ovirt.org/releases/stable/rpm/Fedora
-OVIRT_NIGHTLY_URL = http://ovirt.org/releases/nightly/rpm/Fedora
-OVIRT_BETA_URL    = http://ovirt.org/releases/beta/rpm/Fedora
+OVIRT_BASE_URL    = http://ovirt.org/releases/node-base
+OVIRT_URL         = $(OVIRT_BASE_URL)/stable/rpm
+OVIRT_NIGHTLY_URL = $(OVIRT_BASE_URL)/nightly/rpm
+OVIRT_BETA_URL    = $(OVIRT_BASE_URL)/beta/rpm
+OVIRT_ALPHA_URL   = $(OVIRT_BASE_URL)/alpha/rpm
 CUR_RAWHIDE       = 20
 CUR_DEVEL         = 19
 
@@ -97,13 +99,18 @@ repos.ks: kickstarts
         CENTOS_REPO_LINE="repo --name=centos --mirrorlist=$(CENTOS_MIRROR)?release=$(CENTOS_RELEASE)&arch=${ARCH}&repo=os" ;\
         UPDATES_REPO_LINE="repo --name=centos-updates --mirrorlist=$(CENTOS_MIRROR)?release=$(CENTOS_RELEASE)&arch=${ARCH}&repo=updates" ;\
         EPEL_REPO_LINE="repo --name=epel --baseurl=http://dl.fedoraproject.org/pub/epel/$(CENTOS_RELEASE)/${ARCH}/" ;\
+        OVIRT_STABLE_REPO_LINE="repo --name=ovirt-stable-repo --baseurl=$(OVIRT_URL)/EL/$(CENTOS_RELEASE)\n" ;\
+        OVIRT_NIGHTLY_REPO_LINE="repo --name=ovirt-nightly-repo --baseurl=$(OVIRT_NIGHTLY_URL)/EL/$(CENTOS_RELEASE)\n" ;\
+        OVIRT_BETA_REPO_LINE="repo --name=ovirt-beta-repo --baseurl=$(OVIRT_BETA_URL)/EL/$(CENTOS_RELEASE)\n" ;\
+        OVIRT_ALPHA_REPO_LINE="repo --name=ovirt-alpha-repo --baseurl=$(OVIRT_ALPHA_URL)/EL/$(CENTOS_RELEASE)\n" ;\
         echo "$${CENTOS_REPO_LINE}" > repos.ks ;\
         echo "$${UPDATES_REPO_LINE}" >> repos.ks ;\
         echo "$${EPEL_REPO_LINE}" >> repos.ks ;\
       elif [ -n "$(FEDORA)" ]; then \
-            OVIRT_STABLE_REPO_LINE="repo --name=ovirt-stable-repo --baseurl=$(OVIRT_URL)/$(FEDORA)\n" ;\
-            OVIRT_NIGHTLY_REPO_LINE="repo --name=ovirt-nightly-repo --baseurl=$(OVIRT_NIGHTLY_URL)/$(FEDORA)\n" ;\
-            OVIRT_BETA_REPO_LINE="repo --name=ovirt-beta-repo --baseurl=$(OVIRT_BETA_URL)/$(FEDORA)\n" ;\
+            OVIRT_STABLE_REPO_LINE="repo --name=ovirt-stable-repo --baseurl=$(OVIRT_URL)/Fedora/$(FEDORA)\n" ;\
+            OVIRT_NIGHTLY_REPO_LINE="repo --name=ovirt-nightly-repo --baseurl=$(OVIRT_NIGHTLY_URL)/Fedora/$(FEDORA)\n" ;\
+            OVIRT_BETA_REPO_LINE="repo --name=ovirt-beta-repo --baseurl=$(OVIRT_BETA_URL)/Fedora/$(FEDORA)\n" ;\
+            OVIRT_ALPHA_REPO_LINE="repo --name=ovirt-alpha-repo --baseurl=$(OVIRT_ALPHA_URL)/Fedora/$(FEDORA)\n" ;\
             if [ 0$(FEDORA) == 0$(CUR_RAWHIDE) ]; then \
                 FEDORA_REPO=rawhide ;\
                 FEDORA_REPO_LOC="$(if $(FEDORA_URL),--baseurl=$(FEDORA_URL)/development/rawhide/$(ARCH)/os,--mirrorlist=$(FEDORA_MIRROR)?repo=rawhide&arch=$(ARCH))" ;\
@@ -118,19 +125,23 @@ repos.ks: kickstarts
             fi ;\
             echo "repo --name=$${FEDORA_REPO} $${FEDORA_REPO_LOC}" > repos.ks ;\
             printf "$${UPDATE_REPO_LINE}" >> repos.ks ;\
-            printf "$${OVIRT_STABLE_REPO_LINE}" >> repos.ks ;\
-            if [ "$${BUILD_TYPE}" == "NIGHTLY" ]; then \
-              printf "$${OVIRT_NIGHTLY_REPO_LINE}" >> repos.ks ;\
-              printf "$${OVIRT_BETA_REPO_LINE}" >> repos.ks ;\
-            elif [ "$${BUILD_TYPE}" == "BETA" ]; then \
-              printf "$${OVIRT_BETA_REPO_LINE}" >> repos.ks ;\
-            fi ;\
       else \
             echo "# OVIRT_REPO_URL=$(OVIRT_REPO_URL)" > $@ ;\
             for repo in $(OVIRT_REPO_URL); do \
                echo "repo --name=repo$${i} --baseurl=$${repo}" >> $@ ;\
                i=$${i}_ ;\
             done ;\
+      fi ;\
+      printf "$${OVIRT_STABLE_REPO_LINE}" >> repos.ks ;\
+      if [ "$${BUILD_TYPE}" == "NIGHTLY" ]; then \
+        printf "$${OVIRT_NIGHTLY_REPO_LINE}" >> repos.ks ;\
+        printf "$${OVIRT_ALPHA_REPO_LINE}" >> repos.ks ;\
+        printf "$${OVIRT_BETA_REPO_LINE}" >> repos.ks ;\
+      elif [ "$${BUILD_TYPE}" == "ALPHA" ]; then \
+        printf "$${OVIRT_BETA_REPO_LINE}" >> repos.ks ;\
+        printf "$${OVIRT_ALPHA_REPO_LINE}" >> repos.ks ;\
+      elif [ "$${BUILD_TYPE}" == "BETA" ]; then \
+        printf "$${OVIRT_BETA_REPO_LINE}" >> repos.ks ;\
       fi ;\
 	)
 
