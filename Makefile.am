@@ -58,6 +58,7 @@ OVIRT_URL         = $(OVIRT_BASE_URL)/stable/rpm
 OVIRT_NIGHTLY_URL = $(OVIRT_BASE_URL)/nightly/rpm
 OVIRT_BETA_URL    = $(OVIRT_BASE_URL)/beta/rpm
 OVIRT_ALPHA_URL   = $(OVIRT_BASE_URL)/alpha/rpm
+VIRT_PREVIEW	  = http://fedorapeople.org/groups/virt/virt-preview
 CUR_RAWHIDE       = 20
 CUR_DEVEL         = 19
 
@@ -118,13 +119,16 @@ repos.ks: kickstarts
                 FEDORA_REPO=f$(FEDORA) ;\
                 FEDORA_REPO_LOC="$(if $(FEDORA_URL),--baseurl=$(FEDORA_URL)/development/$(FEDORA)/$(ARCH)/os,--mirrorlist=$(FEDORA_MIRROR)?repo=fedora-$(FEDORA)&arch=$(ARCH))" ;\
                 UPDATE_REPO_LINE="repo --name=$${FEDORA_REPO}-updates-testing $(if $(FEDORA_URL),--baseurl=$(FEDORA_URL)/updates/testing/$(FEDORA)/${ARCH},--mirrorlist=$(FEDORA_MIRROR)?repo=updates-testing-f$(FEDORA)&arch=$(ARCH))\n" ;\
+                VIRT_PREVIEW_LINE="repo --name=$${FEDORA_REPO}-virt-preview --baseurl=$(VIRT_PREVIEW)/fedora-$(FEDORA)/$(ARCH)\n" ;\
             else \
                 FEDORA_REPO=f$(FEDORA) ;\
                 FEDORA_REPO_LOC="$(if $(FEDORA_URL),--baseurl=$(FEDORA_URL)/releases/$(FEDORA)/Everything/${ARCH}/os,--mirrorlist=$(FEDORA_MIRROR)?repo=fedora-$(FEDORA)&arch=$(ARCH))" ;\
                 UPDATE_REPO_LINE="repo --name=$${FEDORA_REPO}-updates $(if $(FEDORA_URL),--baseurl=$(FEDORA_URL)/updates/$(FEDORA)/${ARCH},--mirrorlist=$(FEDORA_MIRROR)?repo=updates-released-f$(FEDORA)&arch=$(ARCH))\n" ;\
+                VIRT_PREVIEW_LINE="repo --name=$${FEDORA_REPO}-virt-preview --baseurl=$(VIRT_PREVIEW)/fedora-$(FEDORA)/$(ARCH)\n" ;\
             fi ;\
             echo "repo --name=$${FEDORA_REPO} $${FEDORA_REPO_LOC}" > repos.ks ;\
             printf "$${UPDATE_REPO_LINE}" >> repos.ks ;\
+            printf "$${VIRT_PREVIEW_LINE}" >> repos.ks ;\
       else \
             echo "# OVIRT_REPO_URL=$(OVIRT_REPO_URL)" > $@ ;\
             for repo in $(OVIRT_REPO_URL); do \
