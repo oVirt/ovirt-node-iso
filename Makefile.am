@@ -60,7 +60,7 @@ OVIRT_BETA_URL    = $(OVIRT_BASE_URL)/beta/rpm
 OVIRT_ALPHA_URL   = $(OVIRT_BASE_URL)/alpha/rpm
 VIRT_PREVIEW	  = http://fedorapeople.org/groups/virt/virt-preview
 CUR_RAWHIDE       = 20
-CUR_DEVEL         = 19
+CUR_DEVEL         = 20
 
 CENTOS_MIRROR     = http://mirrorlist.centos.org/
 CENTOS_RELEASE    = 6
