@@ -6,7 +6,7 @@
 
 Name:		ovirt-node-iso
 Version:	@VERSION@
-Release:	1.999.%{?build_counter}%{?dist}
+Release:	3.999.%{?build_counter}%{?dist}
 Summary:	%{product} ISO Image
 BuildArch:  noarch
 Source1:    %{product_code}-%{version}-%{release}.iso
