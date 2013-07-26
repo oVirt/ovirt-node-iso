@@ -134,13 +134,11 @@ repos.ks: kickstarts
                 FEDORA_REPO=f$(FEDORA) ;\
                 FEDORA_REPO_LOC="$(if $(FEDORA_URL),--baseurl=$(FEDORA_URL)/development/$(FEDORA)/$(ARCH)/os,--mirrorlist=$(FEDORA_MIRROR)?repo=fedora-$(FEDORA)&arch=$(ARCH))" ;\
                 UPDATE_REPO_LINE="repo --name=$${FEDORA_REPO}-updates-testing $(if $(FEDORA_URL),--baseurl=$(FEDORA_URL)/updates/testing/$(FEDORA)/${ARCH},--mirrorlist=$(FEDORA_MIRROR)?repo=updates-testing-f$(FEDORA)&arch=$(ARCH))\n" ;\
-	        GLUSTER_REPO_LINE="repo --name=gluster-3.4 --baseurl=http://download.gluster.org/pub/gluster/glusterfs/3.4/3.4.0/Fedora/fedora-$(FEDORA)/x86_64/\n" ;\
                 VIRT_PREVIEW_LINE="repo --name=$${FEDORA_REPO}-virt-preview --baseurl=$(VIRT_PREVIEW)/fedora-$(FEDORA)/$(ARCH)\n" ;\
             else \
                 FEDORA_REPO=f$(FEDORA) ;\
                 FEDORA_REPO_LOC="$(if $(FEDORA_URL),--baseurl=$(FEDORA_URL)/releases/$(FEDORA)/Everything/${ARCH}/os,--mirrorlist=$(FEDORA_MIRROR)?repo=fedora-$(FEDORA)&arch=$(ARCH))" ;\
                 UPDATE_REPO_LINE="repo --name=$${FEDORA_REPO}-updates $(if $(FEDORA_URL),--baseurl=$(FEDORA_URL)/updates/$(FEDORA)/${ARCH},--mirrorlist=$(FEDORA_MIRROR)?repo=updates-released-f$(FEDORA)&arch=$(ARCH))\n" ;\
-	        GLUSTER_REPO_LINE="repo --name=gluster-3.4 --baseurl=http://download.gluster.org/pub/gluster/glusterfs/3.4/3.4.0/Fedora/fedora-$(FEDORA)/x86_64/\n" ;\
                 VIRT_PREVIEW_LINE="repo --name=$${FEDORA_REPO}-virt-preview --baseurl=$(VIRT_PREVIEW)/fedora-$(FEDORA)/$(ARCH)\n" ;\
             fi ;\
             echo "repo --name=$${FEDORA_REPO} $${FEDORA_REPO_LOC}" > repos.ks ;\
