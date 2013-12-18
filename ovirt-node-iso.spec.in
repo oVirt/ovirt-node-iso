@@ -2,7 +2,7 @@
 %define product_short oVirt Node ISO
 %define product_code ovirt-node-iso
 %define build_counter %(test -n "%{?BUILD_NUMBER}" && echo "%{?BUILD_NUMBER}" || echo @BUILD_NUMBER@ )
-%define vdsm_compat 3.2,3.1
+%define vdsm_compat 3.3,3.2,3.1
 
 Name:		ovirt-node-iso
 Version:	@VERSION@
