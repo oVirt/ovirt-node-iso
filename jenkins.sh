@@ -240,7 +240,7 @@ extract_recipes "${WORKSPACE}/${recipe_name}" "$recipe_rpm"
 createrepo "${OVIRT_CACHE_DIR}"/ovirt
 
 recipes_dir="${WORKSPACE}/${recipe_name}/usr/share/${recipe_name}"
-generate_iso "$recipes_dir" "${recipe_build_number}${BUILD_NUMBER}"
+generate_iso "$recipes_dir" "${recipe_build_number}.${BUILD_NUMBER}"
 
 write_build_info  "$recipe_name" "$recipe_rpm"
 
