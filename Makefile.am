@@ -77,19 +77,6 @@ _ovirt_dev = \
  $(shell grep -q '^[[:space:]]*Release:[[:space:]]*[0-9\.]*999' \
    $(top_srcdir)/*.spec && echo 1 || :)
 
-rpms: dist
-	rpmbuild --define "BUILD_NUMBER $(BUILD_NUMBER)" $(RPM_FLAGS) -ta $(distdir).tar.gz
-
-srpms: dist
-	rpmbuild --define "BUILD_NUMBER $(BUILD_NUMBER)" $(RPM_FLAGS) -ts $(distdir).tar.gz
-
-publish: rpms
-	mkdir -p $(OVIRT_CACHE_DIR)
-	rsync -aq $(shell rpm --eval '%{_rpmdir}')/ $(OVIRT_CACHE_DIR)/ovirt/
-	rsync -aq $(shell rpm --eval '%{_srcrpmdir}')/ $(OVIRT_CACHE_DIR)/ovirt/src
-	rsync -aq $(PACKAGE_NAME)-$(VERSION)-$(RELEASE).iso $(OVIRT_CACHE_DIR)/ovirt/binary/
-	createrepo $(OVIRT_CACHE_DIR)/ovirt
-
 
 $(PACKAGE).ks: version.ks
 
