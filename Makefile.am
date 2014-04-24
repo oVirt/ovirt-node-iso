@@ -16,7 +16,7 @@
 # also available at http://www.gnu.org/copyleft/gpl.html.
 
 PACKAGE           = @PACKAGE_NAME@
-NAME0			  = ovirt-node-image
+NAME0			  = ovirt-node-base-image
 RECIPE            = $(PACKAGE).ks
 PRODUCT           = @PRODUCT_NAME@
 PRODUCT_SHORT     ?= $(PRODUCT)

@@ -1,4 +1,4 @@
-AC_INIT([ovirt-node], [3.0.4], [node-devel@ovirt.org])
+AC_INIT([ovirt-node-base-iso], [3.0.4], [node-devel@ovirt.org])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign -Wno-portability tar-pax])
 
 AC_SUBST([FEDORA],[[`rpm --eval '%{fedora}'|sed 's/[^0-9]//g'`]])
@@ -33,9 +33,8 @@ AC_SUBST([BUILD_NUMBER])
 
 PACKAGE_NAME=ovirt-node-iso
 PRODUCT_NAME=oVirt\ Node\ Hypervisor
-MAIN_KS=ovirt-node-image.ks
+MAIN_KS=ovirt-node-base-image.ks
 
 
-AC_CONFIG_FILES([Makefile
-                ovirt-node-iso.spec])
+AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
