@@ -40,11 +40,6 @@ THEDIR=`pwd`
 
   test $die = 1 && exit 1
 
-  test -f ovirt-node-iso.spec.in || {
-	  echo "You must run this script in the top-level directory"
-	  exit 1
-  }
-
   if test -z "$*"; then
 	  echo "I am going to run ./configure with no arguments - if you wish "
 	  echo "to pass any to it, please specify them on the $0 command line."
