@@ -15,21 +15,21 @@
 # MA  02110-1301, USA.  A copy of the GNU General Public License is
 # also available at http://www.gnu.org/copyleft/gpl.html.
 
-PACKAGE           = @PACKAGE_NAME@
-NAME0			  = ovirt-node-base-image
-RECIPE            = $(PACKAGE).ks
-PRODUCT           = @PRODUCT_NAME@
-PRODUCT_SHORT     ?= $(PRODUCT)
-PKG_FMT           = iso
-MANAGEMENT		  ?= NONE
-FEDORA            = @FEDORA@
-RHEL              = @RHEL@
-DISTRO            = @DISTRO@
-BUILD_TYPE        ?= STABLE
-CENTOS            = @CENTOS@
-ARCH              = $(shell rpm --eval '%{_arch}')
-RELEASE 		  := $(shell rpm -q --qf "%{RELEASE}\n" --define "BUILD_NUMBER $(BUILD_NUMBER)" --specfile ./ovirt-node-iso.spec | head -n1)
-RECIPE_DIR 		  = @RECIPES@
+PACKAGE          = @PACKAGE_NAME@
+NAME0            = ovirt-node-base-image
+RECIPE           = $(PACKAGE).ks
+PRODUCT          = @PRODUCT_NAME@
+PRODUCT_SHORT   ?= $(PRODUCT)
+PKG_FMT          = iso
+MANAGEMENT      ?= NONE
+FEDORA           = @FEDORA@
+RHEL             = @RHEL@
+DISTRO           = @DISTRO@
+BUILD_TYPE      ?= STABLE
+CENTOS           = @CENTOS@
+ARCH             = $(shell rpm --eval '%{_arch}')
+RELEASE         := $(shell rpm -q --qf "%{RELEASE}\n" --define "BUILD_NUMBER $(BUILD_NUMBER)" --specfile ./ovirt-node-iso.spec | head -n1)
+RECIPE_DIR       = @RECIPES@
 OVIRT_CACHE_DIR	?= $(HOME)/ovirt-cache
 
 EXTRA_DIST = \
