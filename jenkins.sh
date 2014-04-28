@@ -195,6 +195,7 @@ gather_artifacts()
         "$WORKSPACE"/manifest*
         "$WORKSPACE"/ovirt-node-iso.mini-manifest.txt
         "$WORKSPACE"/*log
+        "$WORKSPACE"/rpmbuild/RPMS/noarch/ovirt-node-tools*rpm
     )
     mv "${to_archive[@]}" "$dst_dir"
 }
