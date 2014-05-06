@@ -102,7 +102,7 @@ generate_iso()
     ## add the repo-creator to the path
     PATH="$PATH:${recipes_dir}/../../sbin"
     sudo -E env PATH=$PATH make BUILD_TYPE="$BUILD_TYPE" iso publish \
-        1>make.stdout.log 2>make.stderr.log
+        1>make-iso-publish.log 2>&1
     ## restore any file permissions
     sudo -E chown -R $USER:$USER .
 }
