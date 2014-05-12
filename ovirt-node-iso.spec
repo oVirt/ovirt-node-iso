@@ -4,13 +4,12 @@
 
 %global vdsm_compat 3.4,3.3,3.2,3.1
 
-%global build_date %(date +%Y%m%d)
-%global build_release .0
+%define build_release 20140512.0
 
 Name:           ovirt-node-iso
 URL:            http://www.ovirt.org/Node
 Version:        3.4.1
-Release:        %{?build_date}%{?build_release}%{?dist}
+Release:        %{?build_release}%{?dist}
 Summary:        %{product} ISO Image
 BuildArch:      noarch
 Source1:        http://plain.resources.ovirt.org/pub/ovirt-node-base-3.0/iso/el6/ovirt-node-iso-3.0.4-1.0.201401291204.el6.iso
