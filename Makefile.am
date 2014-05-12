@@ -16,7 +16,7 @@
 # also available at http://www.gnu.org/copyleft/gpl.html.
 
 PACKAGE          = @PACKAGE_NAME@
-NAME0            = ovirt-node-base-image
+NAME0            = ovirt-node-image
 RECIPE           = $(PACKAGE).ks
 PRODUCT          = @PRODUCT_NAME@
 PRODUCT_SHORT   ?= $(PRODUCT)
@@ -28,13 +28,11 @@ DISTRO           = @DISTRO@
 BUILD_TYPE      ?= STABLE
 CENTOS           = @CENTOS@
 ARCH             = $(shell rpm --eval '%{_arch}')
-RELEASE         := $(shell rpm -q --qf "%{RELEASE}\n" --define "BUILD_NUMBER $(BUILD_NUMBER)" --specfile ./ovirt-node-iso.spec | head -n1)
+RELEASE         := $(shell date +%Y%m%d).0
 RECIPE_DIR       = @RECIPES@
 OVIRT_CACHE_DIR	?= $(HOME)/ovirt-cache
 
 EXTRA_DIST = \
-	ovirt-node-iso.spec.in       \
-	ovirt-node-iso.spec          \
 	$(PACKAGE)-$(VERSION)-$(RELEASE).iso
 
 DISTCLEANFILES = $(PACKAGE)-$(VERSION).tar.gz \
