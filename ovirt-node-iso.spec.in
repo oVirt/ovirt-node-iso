@@ -1,21 +1,26 @@
-%define product oVirt Node ISO
-%define product_short oVirt Node ISO
-%define product_code ovirt-node-iso
-%define build_counter %(test -n "%{?BUILD_NUMBER}" && echo "%{?BUILD_NUMBER}" || echo @BUILD_NUMBER@ )
-%define vdsm_compat 3.3,3.2,3.1
+%global product oVirt Node ISO
+%global product_short oVirt Node ISO
+%global product_code ovirt-node-iso
 
-Name:		ovirt-node-iso
-Version:	@VERSION@
-Release:	1.0.%{?build_counter}%{?dist}
-Summary:	%{product} ISO Image
-BuildArch:  noarch
-Source1:    %{product_code}-%{version}-%{release}.iso
-Group:		Applications/System
-License:	License: AFL and BSD and (BSD or GPLv2+) and BSD with advertising and Boost and GFDL and GPL and GPL+ and (GPL+ or Artistic) and GPLv1+ and GPLv2 and (GPLv2 or BSD) and (GPLv2 or GPLv3) and GPLv2 with exceptions and GPLv2+ and (GPLv2+ or AFL) and GPLv2+ with exceptions and GPLv3 and GPLv3+ and GPLv3+ with exceptions and IJG and ISC and LGPLv2 and LGPLv2+ and (LGPLv2+ or BSD) and (LGPLv2+ or MIT) and LGPLv2+ with exceptions and LGPLv2/GPLv2 and LGPLv3 and LGPLv3+ and MIT and (MIT or LGPLv2+ or BSD) and (MPLv1.1 or GPLv2+ or LGPLv2+) and Open Publication and OpenLDAP and OpenSSL and Public Domain and Python and (Python or ZPLv2.0) and Rdisc and Redistributable, no modification permitted and SISSL and Vim and zlib
-URL:		http://ovirt.org/
-BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+%global vdsm_compat 3.4,3.3,3.2,3.1
 
-Requires:	rpmdevtools
+%global build_date %(date +%Y%m%d)
+%global build_release .0
+
+Name:           ovirt-node-iso
+URL:            http://www.ovirt.org/Node
+Version:        3.4.1
+Release:        %{?build_date}%{?build_release}%{?dist}
+Summary:        %{product} ISO Image
+BuildArch:      noarch
+Source1:        http://plain.resources.ovirt.org/pub/ovirt-node-base-3.0/iso/el6/ovirt-node-iso-3.0.4-1.0.201401291204.el6.iso
+
+Group:        Applications/System
+License:      License: AFL and BSD and (BSD or GPLv2+) and BSD with advertising and Boost and GFDL and GPL and GPL+ and (GPL+ or Artistic) and GPLv1+ and GPLv2 and (GPLv2 or BSD) and (GPLv2 or GPLv3) and GPLv2 with exceptions and GPLv2+ and (GPLv2+ or AFL) and GPLv2+ with exceptions and GPLv3 and GPLv3+ and GPLv3+ with exceptions and IJG and ISC and LGPLv2 and LGPLv2+ and (LGPLv2+ or BSD) and (LGPLv2+ or MIT) and LGPLv2+ with exceptions and LGPLv2/GPLv2 and LGPLv3 and LGPLv3+ and MIT and (MIT or LGPLv2+ or BSD) and (MPLv1.1 or GPLv2+ or LGPLv2+) and Open Publication and OpenLDAP and OpenSSL and Public Domain and Python and (Python or ZPLv2.0) and Rdisc and Redistributable, no modification permitted and SISSL and Vim and zlib
+
+BuildRequires:  ovirt-node-tools
+Requires:       rpmdevtools
+
 %define app_root %{_datadir}/%{name}
 
 %description
@@ -25,11 +30,14 @@ This rpm contains only the iso image.
 %prep
 
 %build
+#
+# Build the Node for Engine ISO by leveraging edit-node
+#
+export INSTALL=ovirt-node-plugin-vdsm,gettext,pm-utils,make
+export UPDATE=glusterfs-libs,glusterfs-api,openssl
+edit-node -d -v --repo el6.repo --install $INSTALL,$UPDATE %{source1}
 
 %install
-%{__rm} -rf %{buildroot}
-mkdir %{buildroot}
-
 %{__install} -d -m0755 %{buildroot}%{app_root}
 %{__install} -p -m0644 %{SOURCE1} %{buildroot}%{app_root}/%{product_code}-%{version}-%{release}.iso
 echo %{version},%{release} > %{buildroot}%{app_root}/version-%{version}-%{release}.txt
@@ -99,6 +107,10 @@ fi
 
 
 %changelog
+* Mon May 12 2014 Fabian Deutsch <fabiand@redhat.com> - 3.4.1-1.0
+- Major upgrade
+- Use edit-node and base images
+
 * Mon Oct 15 2012 Mike Burns <mburns@redhat.com> 2.5.999
 - add vdsm-compatibility version text file to rpm.
 
