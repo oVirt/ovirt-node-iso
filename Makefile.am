@@ -29,6 +29,7 @@ BUILD_TYPE      ?= STABLE
 CENTOS           = @CENTOS@
 ARCH             = $(shell rpm --eval '%{_arch}')
 RELEASE         := $(shell date +%Y%m%d).0
+DIST            := $(shell rpm -E "%{dist}")
 RECIPE_DIR       = @RECIPES@
 OVIRT_CACHE_DIR	?= $(HOME)/ovirt-cache
 
@@ -179,7 +180,7 @@ $(PACKAGE).$(PKG_FMT) iso: kickstarts version.ks repos.ks
 	@test ! -e "$(PACKAGE_NAME)-$(VERSION)-$(RELEASE).iso" || ( echo "ERROR: $(PACKAGE_NAME)-$(VERSION)-$(RELEASE).iso already exists." && exit 1 )
 	$(NODE_CREATOR) $(RECIPE)
 	@test -e "$(PACKAGE_NAME).iso" || ( echo "ERROR: ISO build failed." && exit 1 )
-	mv $(PACKAGE_NAME).iso $(PACKAGE_NAME)-$(VERSION)-$(RELEASE).iso
+	mv $(PACKAGE_NAME).iso $(PACKAGE_NAME)-$(VERSION)-$(RELEASE)$(DIST).iso
 
 verrel:
 	@echo ${PACKAGE_NAME}-${VERSION}-${RELEASE}
