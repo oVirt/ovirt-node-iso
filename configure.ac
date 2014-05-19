@@ -31,7 +31,7 @@ AC_ARG_WITH([build_number], [AC_HELP_STRING([--with-build-number],
             [BUILD_NUMBER=$(date +%Y%m%d%H%M)])
 AC_SUBST([BUILD_NUMBER])
 
-PACKAGE_NAME=ovirt-node-base-image
+PACKAGE_NAME=ovirt-node-base-iso
 PRODUCT_NAME=oVirt\ Node\ Hypervisor
 MAIN_KS=ovirt-node-base-image.ks
 
