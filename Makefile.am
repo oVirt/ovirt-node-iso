@@ -54,7 +54,7 @@ NODE_CREATOR      = $(shell ( test -e $(RECIPE_DIR)/node-creator && echo "$(RECI
 
 FEDORA_MIRROR     = http://mirrors.fedoraproject.org/mirrorlist
 
-OVIRT_PUB_URL     = http://ovirt.org/pub/
+OVIRT_PUB_URL     = http://resources.ovirt.org/pub
 OVIRT_BASE_URL    = http://ovirt.org/releases/
 NODE_BASE_URL     = $(OVIRT_BASE_URL)/node-base
 
