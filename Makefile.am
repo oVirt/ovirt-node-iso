@@ -53,16 +53,24 @@ DISTCLEANFILES = $(PACKAGE)-$(VERSION).tar.gz \
 NODE_CREATOR      = $(shell ( test -e $(RECIPE_DIR)/node-creator && echo "$(RECIPE_DIR)/node-creator" ) || ( test -e node-creator && echo "./node-creator" ) || which node-creator 2>/dev/null)
 
 FEDORA_MIRROR     = http://mirrors.fedoraproject.org/mirrorlist
+
+OVIRT_PUB_URL     = http://ovirt.org/pub/
 OVIRT_BASE_URL    = http://ovirt.org/releases/
 NODE_BASE_URL     = $(OVIRT_BASE_URL)/node-base
-NODE_URL          = $(NODE_BASE_URL)/stable/rpm
+
+NODE_URL          = $(OVIRT_PUB_URL)/ovirt-node-base-stable/rpm
+
+# The urls below need an update
 NODE_NIGHTLY_URL  = $(NODE_BASE_URL)/nightly/rpm
 NODE_BETA_URL     = $(NODE_BASE_URL)/beta/rpm
 NODE_ALPHA_URL    = $(NODE_BASE_URL)/alpha/rpm
+
+# The repos below are not needed anymore (can be removed in latter commits)
 OVIRT_URL         = $(OVIRT_BASE_URL)/stable/rpm
 OVIRT_NIGHTLY_URL = $(OVIRT_BASE_URL)/nightly/rpm
 OVIRT_BETA_URL    = $(OVIRT_BASE_URL)/beta/rpm
 OVIRT_ALPHA_URL   = $(OVIRT_BASE_URL)/alpha/rpm
+
 VIRT_PREVIEW	  = http://fedorapeople.org/groups/virt/virt-preview
 CUR_RAWHIDE       = 20
 CUR_DEVEL         = 20
@@ -96,7 +104,7 @@ repos.ks: kickstarts
         OVIRT_NIGHTLY_REPO_LINE="repo --name=ovirt-nightly-repo --baseurl=$(OVIRT_NIGHTLY_URL)/EL/$(CENTOS_RELEASE)\n" ;\
         OVIRT_BETA_REPO_LINE="repo --name=ovirt-beta-repo --baseurl=$(OVIRT_BETA_URL)/EL/$(CENTOS_RELEASE)\n" ;\
         OVIRT_ALPHA_REPO_LINE="repo --name=ovirt-alpha-repo --baseurl=$(OVIRT_ALPHA_URL)/EL/$(CENTOS_RELEASE)\n" ;\
-        NODE_STABLE_REPO_LINE="repo --name=node-stable-repo --baseurl=$(NODE_URL)/EL/$(CENTOS_RELEASE)\n" ;\
+        NODE_STABLE_REPO_LINE="repo --name=node-stable-repo --baseurl=$(NODE_URL)/el$(CENTOS_RELEASE)\n" ;\
         NODE_NIGHTLY_REPO_LINE="repo --name=node-nightly-repo --baseurl=$(NODE_NIGHTLY_URL)/EL/$(CENTOS_RELEASE)\n" ;\
         NODE_BETA_REPO_LINE="repo --name=node-beta-repo --baseurl=$(NODE_BETA_URL)/EL/$(CENTOS_RELEASE)\n" ;\
         NODE_ALPHA_REPO_LINE="repo --name=node-alpha-repo --baseurl=$(NODE_ALPHA_URL)/EL/$(CENTOS_RELEASE)\n" ;\
