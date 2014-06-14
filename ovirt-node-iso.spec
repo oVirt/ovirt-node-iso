@@ -115,6 +115,10 @@ if [ ! "$nvr" = "0" ]; then
 fi
 
 
+%check
+%SOURCE3 %{buildroot}/%{app_root}/%{_isoname}.iso.meta
+
+
 %files
 %defattr(0644,root,root,0755)
 %{app_root}
@@ -122,7 +126,6 @@ fi
 %{app_root}/%{_isoname}.iso.meta
 %{app_root}/version-%{version}-%{release}.txt
 %{app_root}/vdsm-compatibility-%{version}-%{release}.txt
-
 
 
 %changelog
