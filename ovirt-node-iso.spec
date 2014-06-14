@@ -1,32 +1,42 @@
 %global product oVirt Node ISO
 %global product_short oVirt Node ISO
-%global product_code ovirt-node-iso
 
-%global vdsm_compat 3.4,3.3,3.2,3.1
+%global vdsm_compat 3.5,3.4,3.3,3.2,3.1
 
-%define build_release 20140512.0
+%define base_iso http://plain.resources.ovirt.org/pub/ovirt-node-base-3.0/iso/el6/ovirt-node-base-iso-3.0.5-20140522.0.el6.iso
+%define build_release 20140610.0
 
 Name:           ovirt-node-iso
 URL:            http://www.ovirt.org/Node
-Version:        3.4.1
+Version:        3.5.0
 Release:        %{?build_release}%{?dist}
 Summary:        %{product} ISO Image
 BuildArch:      noarch
-Source1:        http://plain.resources.ovirt.org/pub/ovirt-node-base-3.0/iso/el6/ovirt-node-iso-3.0.4-1.0.201401291204.el6.iso
+Source1:        %{?base_iso}
+Source2:        generate-repos.sh
+Source3:        verify-meta-file.sh
 
 Group:        Applications/System
 License:      License: AFL and BSD and (BSD or GPLv2+) and BSD with advertising and Boost and GFDL and GPL and GPL+ and (GPL+ or Artistic) and GPLv1+ and GPLv2 and (GPLv2 or BSD) and (GPLv2 or GPLv3) and GPLv2 with exceptions and GPLv2+ and (GPLv2+ or AFL) and GPLv2+ with exceptions and GPLv3 and GPLv3+ and GPLv3+ with exceptions and IJG and ISC and LGPLv2 and LGPLv2+ and (LGPLv2+ or BSD) and (LGPLv2+ or MIT) and LGPLv2+ with exceptions and LGPLv2/GPLv2 and LGPLv3 and LGPLv3+ and MIT and (MIT or LGPLv2+ or BSD) and (MPLv1.1 or GPLv2+ or LGPLv2+) and Open Publication and OpenLDAP and OpenSSL and Public Domain and Python and (Python or ZPLv2.0) and Rdisc and Redistributable, no modification permitted and SISSL and Vim and zlib
 
 BuildRequires:  ovirt-node-tools
+BuildRequires:  libguestfs-tools
 Requires:       rpmdevtools
 
+%define _isoname %name-%version-%{?build_release}
 %define app_root %{_datadir}/%{name}
+
 
 %description
 The iso boot image for %{product}.
 This rpm contains only the iso image.
 
+
 %prep
+export OVER=$(echo %{version} | egrep -o ".{3}" | tr -d .)
+export DIST=$(echo %{dist} | egrep -o "[fe].*")
+bash %SOURCE2 $OVER $DIST > repos-for-edit-node-iso.repo
+
 
 %build
 #
@@ -34,13 +44,20 @@ This rpm contains only the iso image.
 #
 export INSTALL=ovirt-node-plugin-vdsm,gettext,pm-utils,make
 export UPDATE=glusterfs-libs,glusterfs-api,openssl
-edit-node -d -v --repo el6.repo --install $INSTALL,$UPDATE %{source1}
+
+edit-node -d -v \
+    --repo repos-for-edit-node-iso.repo \
+    --install $INSTALL,$UPDATE %{source1} \
+    --name %{_isoname}.iso \
+    --output %{buildroot}
+
 
 %install
 %{__install} -d -m0755 %{buildroot}%{app_root}
-%{__install} -p -m0644 %{SOURCE1} %{buildroot}%{app_root}/%{product_code}-%{version}-%{release}.iso
+%{__install} -p -m0644 %{SOURCE1} %{buildroot}%{app_root}/%{name}-%{version}-%{release}.iso
 echo %{version},%{release} > %{buildroot}%{app_root}/version-%{version}-%{release}.txt
 echo %{vdsm_compat} > %{buildroot}%{app_root}/vdsm-compatibility-%{version}-%{release}.txt
+
 
 %post
 nvr=0
@@ -61,6 +78,11 @@ ln -snf %{app_root}/ovirt-node-iso-${nvr#*-}.iso %{app_root}/%{name}.iso
 if [ -f %{app_root}/vdsm-compatibility-${nvr#*-}.txt ]; then
     ln -snf %{app_root}/vdsm-compatibility-${nvr#*-}.txt %{app_root}/vdsm-compatibility.txt
 fi
+
+# Extract the metadata file
+virt-cat --add %{_isoname}.iso \
+    /isolinux/version > %{buildroot}/%{app_root}/%{_isoname}.iso.meta
+
 
 %preun
 #first remove all symlinks
@@ -92,14 +114,12 @@ if [ ! "$nvr" = "0" ]; then
     fi
 fi
 
-%clean
-%{__rm} -rf %{buildroot}
-
 
 %files
 %defattr(0644,root,root,0755)
 %{app_root}
-%{app_root}/%{product_code}-%{version}-%{release}.iso
+%{app_root}/%{_isoname}.iso
+%{app_root}/%{_isoname}.iso.meta
 %{app_root}/version-%{version}-%{release}.txt
 %{app_root}/vdsm-compatibility-%{version}-%{release}.txt
 
