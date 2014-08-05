@@ -191,7 +191,7 @@ $(PACKAGE).$(PKG_FMT) iso: kickstarts version.ks repos.ks
 	mv $(PACKAGE_NAME).iso $(PACKAGE_NAME)-$(VERSION)-$(RELEASE)$(DIST).iso
 
 verrel:
-	@echo ${PACKAGE_NAME}-${VERSION}-${RELEASE}
+	@echo ${PACKAGE_NAME}-${VERSION}-${RELEASE}${DIST}
 
 node-creator:
 	@test -n "${NODE_CREATOR}" || ( echo "No node-creator script found" && exit 1 )
