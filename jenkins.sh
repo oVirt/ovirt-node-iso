@@ -190,8 +190,8 @@ gather_artifacts()
         "$dst_dir/ovirt-node_scm_hash.txt"
     cp "$WORKSPACE/.git/HEAD" "$dst_dir/scm_hash.txt"
     to_archive=(
-        "$WORKSPACE"/ovirt-node-iso*iso
-        "$WORKSPACE"/ovirt-cache/ovirt/*/ovirt-node-iso*rpm
+        "$WORKSPACE"/ovirt-node-*iso
+        "$WORKSPACE"/ovirt-cache/ovirt/*/ovirt-node-*rpm
         "$WORKSPACE"/manifest*
         "$WORKSPACE"/ovirt-node-iso.mini-manifest.txt
         "$WORKSPACE"/*log
