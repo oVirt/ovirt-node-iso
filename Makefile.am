@@ -21,7 +21,6 @@ RECIPE            = $(PACKAGE).ks
 PRODUCT           = @PRODUCT_NAME@
 PRODUCT_SHORT     ?= $(PRODUCT)
 PKG_FMT           = iso
-MANAGEMENT		  ?= NONE
 FEDORA            = @FEDORA@
 RHEL              = @RHEL@
 DISTRO            = @DISTRO@
@@ -30,7 +29,7 @@ CENTOS            = @CENTOS@
 ARCH              = $(shell rpm --eval '%{_arch}')
 RELEASE 		  := $(shell rpm -q --qf "%{RELEASE}\n" --define "BUILD_NUMBER $(BUILD_NUMBER)" --specfile ./ovirt-node-iso.spec | head -n1)
 RECIPE_DIR 		  = @RECIPES@
-OVIRT_CACHE_DIR	?= $(HOME)/ovirt-cache
+OVIRT_CACHE_DIR	?= $(HOME)/ovirt-caches
 
 EXTRA_DIST = \
 	ovirt-node-iso.spec.in       \
@@ -54,12 +53,7 @@ DISTCLEANFILES = $(PACKAGE)-$(VERSION).tar.gz \
 NODE_CREATOR      = $(shell ( test -e $(RECIPE_DIR)/node-creator && echo "$(RECIPE_DIR)/node-creator" ) || ( test -e node-creator && echo "./node-creator" ) || which node-creator 2>/dev/null)
 
 FEDORA_MIRROR     = http://mirrors.fedoraproject.org/mirrorlist
-OVIRT_BASE_URL    = http://ovirt.org/releases/
-NODE_BASE_URL     = $(OVIRT_BASE_URL)/
-NODE_URL          = $(NODE_BASE_URL)/stable/rpm
-NODE_NIGHTLY_URL  = $(NODE_BASE_URL)/nightly/rpm
-NODE_BETA_URL     = $(NODE_BASE_URL)/beta/rpm
-NODE_ALPHA_URL    = $(NODE_BASE_URL)/alpha/rpm
+OVIRT_BASE_URL    = http://ovirt.org/releases
 OVIRT_URL         = $(OVIRT_BASE_URL)/stable/rpm
 OVIRT_NIGHTLY_URL = $(OVIRT_BASE_URL)/nightly/rpm
 OVIRT_BETA_URL    = $(OVIRT_BASE_URL)/beta/rpm
@@ -110,10 +104,6 @@ repos.ks: kickstarts
         OVIRT_NIGHTLY_REPO_LINE="repo --name=ovirt-nightly-repo --baseurl=$(OVIRT_NIGHTLY_URL)/EL/$(CENTOS_RELEASE)\n" ;\
         OVIRT_BETA_REPO_LINE="repo --name=ovirt-beta-repo --baseurl=$(OVIRT_BETA_URL)/EL/$(CENTOS_RELEASE)\n" ;\
         OVIRT_ALPHA_REPO_LINE="repo --name=ovirt-alpha-repo --baseurl=$(OVIRT_ALPHA_URL)/EL/$(CENTOS_RELEASE)\n" ;\
-        NODE_STABLE_REPO_LINE="repo --name=node-stable-repo --baseurl=$(NODE_URL)/EL/$(CENTOS_RELEASE)\n" ;\
-        NODE_NIGHTLY_REPO_LINE="repo --name=node-nightly-repo --baseurl=$(NODE_NIGHTLY_URL)/EL/$(CENTOS_RELEASE)\n" ;\
-        NODE_BETA_REPO_LINE="repo --name=node-beta-repo --baseurl=$(NODE_BETA_URL)/EL/$(CENTOS_RELEASE)\n" ;\
-        NODE_ALPHA_REPO_LINE="repo --name=node-alpha-repo --baseurl=$(NODE_ALPHA_URL)/EL/$(CENTOS_RELEASE)\n" ;\
 	GLUSTER_REPO_LINE="repo --name=gluster-3.4 --baseurl=http://download.gluster.org/pub/gluster/glusterfs/3.4/3.4.0/CentOS/epel-6Server/x86_64/\n" ;\
         echo "$${CENTOS_REPO_LINE}" > repos.ks ;\
         echo "$${UPDATES_REPO_LINE}" >> repos.ks ;\
@@ -123,10 +113,6 @@ repos.ks: kickstarts
             OVIRT_NIGHTLY_REPO_LINE="repo --name=ovirt-nightly-repo --baseurl=$(OVIRT_NIGHTLY_URL)/Fedora/$(FEDORA)\n" ;\
             OVIRT_BETA_REPO_LINE="repo --name=ovirt-beta-repo --baseurl=$(OVIRT_BETA_URL)/Fedora/$(FEDORA)\n" ;\
             OVIRT_ALPHA_REPO_LINE="repo --name=ovirt-alpha-repo --baseurl=$(OVIRT_ALPHA_URL)/Fedora/$(FEDORA)\n" ;\
-            NODE_STABLE_REPO_LINE="repo --name=node-stable-repo --baseurl=$(NODE_URL)/Fedora/$(FEDORA)\n" ;\
-            NODE_NIGHTLY_REPO_LINE="repo --name=node-nightly-repo --baseurl=$(NODE_NIGHTLY_URL)/Fedora/$(FEDORA)\n" ;\
-            NODE_BETA_REPO_LINE="repo --name=node-beta-repo --baseurl=$(NODE_BETA_URL)/Fedora/$(FEDORA)\n" ;\
-            NODE_ALPHA_REPO_LINE="repo --name=node-alpha-repo --baseurl=$(NODE_ALPHA_URL)/Fedora/$(FEDORA)\n" ;\
             if [ 0$(FEDORA) == 0$(CUR_RAWHIDE) ]; then \
                 FEDORA_REPO=rawhide ;\
                 FEDORA_REPO_LOC="$(if $(FEDORA_URL),--baseurl=$(FEDORA_URL)/development/rawhide/$(ARCH)/os,--mirrorlist=$(FEDORA_MIRROR)?repo=rawhide&arch=$(ARCH))" ;\
@@ -145,38 +131,23 @@ repos.ks: kickstarts
             printf "$${UPDATE_REPO_LINE}" >> repos.ks ;\
             printf "$${VIRT_PREVIEW_LINE}" >> repos.ks ;\
       else \
-            echo "# NODE_REPO_URL=$(NODE_REPO_URL)" > $@ ;\
-            for repo in $(NODE_REPO_URL); do \
+            echo "# OVIRT_REPO_URL=$(OVIRT_REPO_URL)" > $@ ;\
+            for repo in $(OVIRT_REPO_URL); do \
                echo "repo --name=repo$${i} --baseurl=$${repo}" >> $@ ;\
                i=$${i}_ ;\
             done ;\
       fi ;\
-      printf "$${NODE_STABLE_REPO_LINE}" >> repos.ks ;\
       printf "$${GLUSTER_REPO_LINE}" >> repos.ks ;\
-	  if [ "$${MANAGEMENT}" == "OVIRT" ]; then \
-        printf "$${OVIRT_STABLE_REPO_LINE}" >> repos.ks ;\
-      fi ;\
+      printf "$${OVIRT_STABLE_REPO_LINE}" >> repos.ks ;\
       if [ "$${BUILD_TYPE}" == "NIGHTLY" ]; then \
-		if [ "$${MANAGEMENT}" == "OVIRT" ]; then \
-            printf "$${OVIRT_NIGHTLY_REPO_LINE}" >> repos.ks ;\
-            printf "$${OVIRT_ALPHA_REPO_LINE}" >> repos.ks ;\
-            printf "$${OVIRT_BETA_REPO_LINE}" >> repos.ks ;\
-        fi ;\
-        printf "$${NODE_NIGHTLY_REPO_LINE}" >> repos.ks ;\
-        printf "$${NODE_ALPHA_REPO_LINE}" >> repos.ks ;\
-        printf "$${NODE_BETA_REPO_LINE}" >> repos.ks ;\
+        printf "$${OVIRT_NIGHTLY_REPO_LINE}" >> repos.ks ;\
+        printf "$${OVIRT_ALPHA_REPO_LINE}" >> repos.ks ;\
+        printf "$${OVIRT_BETA_REPO_LINE}" >> repos.ks ;\
       elif [ "$${BUILD_TYPE}" == "ALPHA" ]; then \
-		if [ "$${MANAGEMENT}" == "OVIRT" ]; then \
-            printf "$${OVIRT_ALPHA_REPO_LINE}" >> repos.ks ;\
-            printf "$${OVIRT_BETA_REPO_LINE}" >> repos.ks ;\
-        fi ;\
-        printf "$${NODE_BETA_REPO_LINE}" >> repos.ks ;\
-        printf "$${NODE_ALPHA_REPO_LINE}" >> repos.ks ;\
+        printf "$${OVIRT_ALPHA_REPO_LINE}" >> repos.ks ;\
+        printf "$${OVIRT_BETA_REPO_LINE}" >> repos.ks ;\
       elif [ "$${BUILD_TYPE}" == "BETA" ]; then \
-		if [ "$${MANAGEMENT}" == "OVIRT" ]; then \
-            printf "$${OVIRT_BETA_REPO_LINE}" >> repos.ks ;\
-        fi ;\
-        printf "$${NODE_BETA_REPO_LINE}" >> repos.ks ;\
+        printf "$${OVIRT_BETA_REPO_LINE}" >> repos.ks ;\
       fi ;\
 	)
 
