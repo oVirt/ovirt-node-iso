@@ -31,6 +31,15 @@ AC_ARG_WITH([build_number], [AC_HELP_STRING([--with-build-number],
             [BUILD_NUMBER=$(date +%Y%m%d%H%M)])
 AC_SUBST([BUILD_NUMBER])
 
+AC_ARG_WITH([extra_recipe], [AC_HELP_STRING([--with-extra-recipe],
+            [Specify extra recipe to be used .  Defaults to none])],
+            [EXTRA_RECIPE="$withval"
+            use_extra_recipe=true],
+            [EXTRA_RECIPE="false"])
+AC_SUBST([EXTRA_RECIPE])
+AM_CONDITIONAL([USE_EXTRA_RECIPE],[test x$use_extra_recipe = xtrue])
+
+
 PACKAGE_NAME=ovirt-node-iso
 PRODUCT_NAME=oVirt\ Node\ Hypervisor
 MAIN_KS=ovirt-node-image.ks

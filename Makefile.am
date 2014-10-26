@@ -19,6 +19,7 @@ PACKAGE           = @PACKAGE_NAME@
 NAME0			  = ovirt-node-image
 RECIPE            = $(PACKAGE).ks
 PRODUCT           = @PRODUCT_NAME@
+EXTRA_RECIPE      = @EXTRA_RECIPE@
 PRODUCT_SHORT     ?= $(PRODUCT)
 PKG_FMT           = iso
 FEDORA            = @FEDORA@
@@ -151,7 +152,7 @@ repos.ks: kickstarts
       fi ;\
 	)
 
-version.ks: repos.ks
+version.ks: repos.ks $(EXTRA_RECEPIE)
 	( \
 	    echo "PRODUCT='"$(PRODUCT)"'" ;\
 	    echo "PRODUCT_SHORT='"$(PRODUCT_SHORT)"'" ;\
@@ -159,6 +160,9 @@ version.ks: repos.ks
 	    echo "VERSION=$(VERSION)" ;\
 	    echo "RELEASE=$(RELEASE)" ;\
 	) > $@
+if USE_EXTRA_RECIPE
+	echo -e "\n%include $(EXTRA_RECIPE)" >> $(NAME0).ks
+endif
 	ksflatten -c $(NAME0).ks -o $(PACKAGE).ks
 
 $(PACKAGE).$(PKG_FMT) iso: kickstarts version.ks repos.ks
