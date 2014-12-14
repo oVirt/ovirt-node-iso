@@ -63,8 +63,8 @@ VIRT_PREVIEW	  = http://fedorapeople.org/groups/virt/virt-preview
 CUR_RAWHIDE       = 21
 CUR_DEVEL         = 21
 
-CENTOS_MIRROR     = http://mirrorlist.centos.org/
-CENTOS_RELEASE    = 6
+CENTOS_MIRROR       = http://mirrorlist.centos.org/
+OVIRT_CENTOS_RELEASE= 6
 
 # For Release: 0..., set _ovirt_dev=1 so that we get extra_release.GIT-
 # annotated rpm version strings.
@@ -98,13 +98,13 @@ kickstarts: clean_ks node-creator
 repos.ks: kickstarts
 	( \
       if [ -n "$(CENTOS)" ]; then \
-        CENTOS_REPO_LINE="repo --name=centos --mirrorlist=$(CENTOS_MIRROR)?release=$(CENTOS_RELEASE)&arch=${ARCH}&repo=os" ;\
-        UPDATES_REPO_LINE="repo --name=centos-updates --mirrorlist=$(CENTOS_MIRROR)?release=$(CENTOS_RELEASE)&arch=${ARCH}&repo=updates" ;\
-        EPEL_REPO_LINE="repo --name=epel --baseurl=http://dl.fedoraproject.org/pub/epel/$(CENTOS_RELEASE)/${ARCH}/" ;\
-        OVIRT_STABLE_REPO_LINE="repo --name=ovirt-stable-repo --baseurl=$(OVIRT_URL)/EL/$(CENTOS_RELEASE)\n" ;\
-        OVIRT_NIGHTLY_REPO_LINE="repo --name=ovirt-nightly-repo --baseurl=$(OVIRT_NIGHTLY_URL)/EL/$(CENTOS_RELEASE)\n" ;\
-        OVIRT_BETA_REPO_LINE="repo --name=ovirt-beta-repo --baseurl=$(OVIRT_BETA_URL)/EL/$(CENTOS_RELEASE)\n" ;\
-        OVIRT_ALPHA_REPO_LINE="repo --name=ovirt-alpha-repo --baseurl=$(OVIRT_ALPHA_URL)/EL/$(CENTOS_RELEASE)\n" ;\
+        CENTOS_REPO_LINE="repo --name=centos --mirrorlist=$(CENTOS_MIRROR)?release=$(CENTOS)&arch=${ARCH}&repo=os" ;\
+        UPDATES_REPO_LINE="repo --name=centos-updates --mirrorlist=$(CENTOS_MIRROR)?release=$(CENTOS)&arch=${ARCH}&repo=updates" ;\
+        EPEL_REPO_LINE="repo --name=epel --baseurl=http://dl.fedoraproject.org/pub/epel/$(CENTOS)/${ARCH}/" ;\
+        OVIRT_STABLE_REPO_LINE="repo --name=ovirt-stable-repo --baseurl=$(OVIRT_URL)/EL/$(OVIRT_CENTOS_RELEASE)\n" ;\
+        OVIRT_NIGHTLY_REPO_LINE="repo --name=ovirt-nightly-repo --baseurl=$(OVIRT_NIGHTLY_URL)/EL/$(OVIRT_CENTOS_RELEASE)\n" ;\
+        OVIRT_BETA_REPO_LINE="repo --name=ovirt-beta-repo --baseurl=$(OVIRT_BETA_URL)/EL/$(OVIRT_CENTOS_RELEASE)\n" ;\
+        OVIRT_ALPHA_REPO_LINE="repo --name=ovirt-alpha-repo --baseurl=$(OVIRT_ALPHA_URL)/EL/$(OVIRT_CENTOS_RELEASE)\n" ;\
 	GLUSTER_REPO_LINE="repo --name=gluster-3.4 --baseurl=http://download.gluster.org/pub/gluster/glusterfs/3.4/3.4.0/CentOS/epel-6Server/x86_64/\n" ;\
         echo "$${CENTOS_REPO_LINE}" > repos.ks ;\
         echo "$${UPDATES_REPO_LINE}" >> repos.ks ;\
