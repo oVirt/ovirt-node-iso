@@ -30,6 +30,8 @@ CENTOS            = @CENTOS@
 ARCH              = $(shell rpm --eval '%{_arch}')
 RELEASE 		  := $(shell rpm -q --qf "%{RELEASE}\n" --define "BUILD_NUMBER $(BUILD_NUMBER)" --specfile ./ovirt-node-iso.spec | head -n1)
 RECIPE_DIR 		  = @RECIPES@
+OVIRT_VERSION     = @PACKAGE_VERSION@
+
 OVIRT_CACHE_DIR	?= $(HOME)/ovirt-caches
 
 EXTRA_DIST = \
@@ -52,19 +54,9 @@ DISTCLEANFILES = $(PACKAGE)-$(VERSION).tar.gz \
 # then check local dir
 # then check PATH
 NODE_CREATOR      = $(shell ( test -e $(RECIPE_DIR)/node-creator && echo "$(RECIPE_DIR)/node-creator" ) || ( test -e node-creator && echo "./node-creator" ) || which node-creator 2>/dev/null)
-
 FEDORA_MIRROR     = http://mirrors.fedoraproject.org/mirrorlist
-OVIRT_BASE_URL    = http://ovirt.org/releases
-OVIRT_URL         = $(OVIRT_BASE_URL)/stable/rpm
-OVIRT_NIGHTLY_URL = $(OVIRT_BASE_URL)/nightly/rpm
-OVIRT_BETA_URL    = $(OVIRT_BASE_URL)/beta/rpm
-OVIRT_ALPHA_URL   = $(OVIRT_BASE_URL)/alpha/rpm
-VIRT_PREVIEW	  = http://fedorapeople.org/groups/virt/virt-preview
-CUR_RAWHIDE       = 21
-CUR_DEVEL         = 21
-
-CENTOS_MIRROR       = http://mirrorlist.centos.org/
-OVIRT_CENTOS_RELEASE= 6
+OVIRT_BASE_URL    = http://resources.ovirt.org/pub/ovirt-$(OVIRT_VERSION)/rpm
+CENTOS_MIRROR     = http://mirrorlist.centos.org/
 
 # For Release: 0..., set _ovirt_dev=1 so that we get extra_release.GIT-
 # annotated rpm version strings.
@@ -98,57 +90,24 @@ kickstarts: clean_ks node-creator
 repos.ks: kickstarts
 	( \
       if [ -n "$(CENTOS)" ]; then \
-        CENTOS_REPO_LINE="repo --name=centos --mirrorlist=$(CENTOS_MIRROR)?release=$(CENTOS)&arch=${ARCH}&repo=os" ;\
-        UPDATES_REPO_LINE="repo --name=centos-updates --mirrorlist=$(CENTOS_MIRROR)?release=$(CENTOS)&arch=${ARCH}&repo=updates" ;\
-        EPEL_REPO_LINE="repo --name=epel --baseurl=http://dl.fedoraproject.org/pub/epel/$(CENTOS)/${ARCH}/" ;\
-        OVIRT_STABLE_REPO_LINE="repo --name=ovirt-stable-repo --baseurl=$(OVIRT_URL)/EL/$(OVIRT_CENTOS_RELEASE)\n" ;\
-        OVIRT_NIGHTLY_REPO_LINE="repo --name=ovirt-nightly-repo --baseurl=$(OVIRT_NIGHTLY_URL)/EL/$(OVIRT_CENTOS_RELEASE)\n" ;\
-        OVIRT_BETA_REPO_LINE="repo --name=ovirt-beta-repo --baseurl=$(OVIRT_BETA_URL)/EL/$(OVIRT_CENTOS_RELEASE)\n" ;\
-        OVIRT_ALPHA_REPO_LINE="repo --name=ovirt-alpha-repo --baseurl=$(OVIRT_ALPHA_URL)/EL/$(OVIRT_CENTOS_RELEASE)\n" ;\
-	GLUSTER_REPO_LINE="repo --name=gluster-3.4 --baseurl=http://download.gluster.org/pub/gluster/glusterfs/3.4/3.4.0/CentOS/epel-6Server/x86_64/\n" ;\
-        echo "$${CENTOS_REPO_LINE}" > repos.ks ;\
-        echo "$${UPDATES_REPO_LINE}" >> repos.ks ;\
-        echo "$${EPEL_REPO_LINE}" >> repos.ks ;\
+        CENTOS_REPO_LINE="repo --name=centos --mirrorlist=$(CENTOS_MIRROR)?release=$(CENTOS)&arch=${ARCH}&repo=os \n" ;\
+        UPDATES_REPO_LINE="repo --name=centos-updates --mirrorlist=$(CENTOS_MIRROR)?release=$(CENTOS)&arch=${ARCH}&repo=updates \n" ;\
+        EPEL_REPO_LINE="repo --name=epel --baseurl=http://dl.fedoraproject.org/pub/epel/$(CENTOS)/${ARCH} \n" ;\
+        OVIRT_REPO_LINE="repo --name=ovirt-repo --baseurl=$(OVIRT_BASE_URL)/el$(CENTOS)\n" ;\
+		GLUSTER_REPO_LINE="repo --name=ovirt-$(OVIRT_VERSION)-glusterfs-noarch-epel --baseurl=http://download.gluster.org/pub/gluster/glusterfs/LATEST/EPEL.repo/epel-$(CENTOS)/noarch\n" ;\
+        printf "$${CENTOS_REPO_LINE}" > repos.ks ;\
+        printf "$${UPDATES_REPO_LINE}" >> repos.ks ;\
+        printf "$${EPEL_REPO_LINE}" >> repos.ks ;\
+        printf "$${OVIRT_REPO_LINE}" >> repos.ks ;\
+        printf "$${GLUSTER_REPO_LINE}" >> repos.ks ;\
       elif [ -n "$(FEDORA)" ]; then \
-            OVIRT_STABLE_REPO_LINE="repo --name=ovirt-stable-repo --baseurl=$(OVIRT_URL)/Fedora/$(FEDORA)\n" ;\
-            OVIRT_NIGHTLY_REPO_LINE="repo --name=ovirt-nightly-repo --baseurl=$(OVIRT_NIGHTLY_URL)/Fedora/$(FEDORA)\n" ;\
-            OVIRT_BETA_REPO_LINE="repo --name=ovirt-beta-repo --baseurl=$(OVIRT_BETA_URL)/Fedora/$(FEDORA)\n" ;\
-            OVIRT_ALPHA_REPO_LINE="repo --name=ovirt-alpha-repo --baseurl=$(OVIRT_ALPHA_URL)/Fedora/$(FEDORA)\n" ;\
-            if [ 0$(FEDORA) == 0$(CUR_RAWHIDE) ]; then \
-                FEDORA_REPO=rawhide ;\
-                FEDORA_REPO_LOC="$(if $(FEDORA_URL),--baseurl=$(FEDORA_URL)/development/rawhide/$(ARCH)/os,--mirrorlist=$(FEDORA_MIRROR)?repo=rawhide&arch=$(ARCH))" ;\
-            elif [ 0$(FEDORA) == 0$(CUR_DEVEL) ]; then \
-                FEDORA_REPO=f$(FEDORA) ;\
-                FEDORA_REPO_LOC="$(if $(FEDORA_URL),--baseurl=$(FEDORA_URL)/development/$(FEDORA)/$(ARCH)/os,--mirrorlist=$(FEDORA_MIRROR)?repo=fedora-$(FEDORA)&arch=$(ARCH))" ;\
-                UPDATE_REPO_LINE="repo --name=$${FEDORA_REPO}-updates-testing $(if $(FEDORA_URL),--baseurl=$(FEDORA_URL)/updates/testing/$(FEDORA)/${ARCH},--mirrorlist=$(FEDORA_MIRROR)?repo=updates-testing-f$(FEDORA)&arch=$(ARCH))\n" ;\
-                VIRT_PREVIEW_LINE="repo --name=$${FEDORA_REPO}-virt-preview --baseurl=$(VIRT_PREVIEW)/fedora-$(FEDORA)/$(ARCH)\n" ;\
-            else \
-                FEDORA_REPO=f$(FEDORA) ;\
-                FEDORA_REPO_LOC="$(if $(FEDORA_URL),--baseurl=$(FEDORA_URL)/releases/$(FEDORA)/Everything/${ARCH}/os,--mirrorlist=$(FEDORA_MIRROR)?repo=fedora-$(FEDORA)&arch=$(ARCH))" ;\
-                UPDATE_REPO_LINE="repo --name=$${FEDORA_REPO}-updates $(if $(FEDORA_URL),--baseurl=$(FEDORA_URL)/updates/$(FEDORA)/${ARCH},--mirrorlist=$(FEDORA_MIRROR)?repo=updates-released-f$(FEDORA)&arch=$(ARCH))\n" ;\
-                VIRT_PREVIEW_LINE="repo --name=$${FEDORA_REPO}-virt-preview --baseurl=$(VIRT_PREVIEW)/fedora-$(FEDORA)/$(ARCH)\n" ;\
-            fi ;\
-            echo "repo --name=$${FEDORA_REPO} $${FEDORA_REPO_LOC}" > repos.ks ;\
+            OVIRT_REPO_LINE="repo --name=ovirt-stable-repo --baseurl=$(OVIRT_BASE_URL)/fc/$(FEDORA)\n" ;\
+            FEDORA_REPO=f$(FEDORA) ;\
+            EDORA_REPO_LOC="repo --name=$${FEDORA_REPO} --mirrorlist=$(FEDORA_MIRROR)?repo=fedora-$(FEDORA)&arch=$(ARCH)" ;\
+            UPDATE_REPO_LINE="repo --name=$${FEDORA_REPO}-updates --mirrorlist=$(FEDORA_MIRROR)?repo=updates-released-f$(FEDORA)&arch=$(ARCH)\n" ;\
+            printf "$${EDORA_REPO_LOC}" >> repos.ks ;\
             printf "$${UPDATE_REPO_LINE}" >> repos.ks ;\
             printf "$${VIRT_PREVIEW_LINE}" >> repos.ks ;\
-      else \
-            echo "# OVIRT_REPO_URL=$(OVIRT_REPO_URL)" > $@ ;\
-            for repo in $(OVIRT_REPO_URL); do \
-               echo "repo --name=repo$${i} --baseurl=$${repo}" >> $@ ;\
-               i=$${i}_ ;\
-            done ;\
-      fi ;\
-      printf "$${GLUSTER_REPO_LINE}" >> repos.ks ;\
-      printf "$${OVIRT_STABLE_REPO_LINE}" >> repos.ks ;\
-      if [ "$${BUILD_TYPE}" == "NIGHTLY" ]; then \
-        printf "$${OVIRT_NIGHTLY_REPO_LINE}" >> repos.ks ;\
-        printf "$${OVIRT_ALPHA_REPO_LINE}" >> repos.ks ;\
-        printf "$${OVIRT_BETA_REPO_LINE}" >> repos.ks ;\
-      elif [ "$${BUILD_TYPE}" == "ALPHA" ]; then \
-        printf "$${OVIRT_ALPHA_REPO_LINE}" >> repos.ks ;\
-        printf "$${OVIRT_BETA_REPO_LINE}" >> repos.ks ;\
-      elif [ "$${BUILD_TYPE}" == "BETA" ]; then \
-        printf "$${OVIRT_BETA_REPO_LINE}" >> repos.ks ;\
       fi ;\
 	)
 
