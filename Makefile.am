@@ -101,13 +101,12 @@ repos.ks: kickstarts
         printf "$${OVIRT_REPO_LINE}" >> repos.ks ;\
         printf "$${GLUSTER_REPO_LINE}" >> repos.ks ;\
       elif [ -n "$(FEDORA)" ]; then \
-            OVIRT_REPO_LINE="repo --name=ovirt-stable-repo --baseurl=$(OVIRT_BASE_URL)/fc/$(FEDORA)\n" ;\
-            FEDORA_REPO=f$(FEDORA) ;\
-            EDORA_REPO_LOC="repo --name=$${FEDORA_REPO} --mirrorlist=$(FEDORA_MIRROR)?repo=fedora-$(FEDORA)&arch=$(ARCH)" ;\
-            UPDATE_REPO_LINE="repo --name=$${FEDORA_REPO}-updates --mirrorlist=$(FEDORA_MIRROR)?repo=updates-released-f$(FEDORA)&arch=$(ARCH)\n" ;\
-            printf "$${EDORA_REPO_LOC}" >> repos.ks ;\
-            printf "$${UPDATE_REPO_LINE}" >> repos.ks ;\
-            printf "$${VIRT_PREVIEW_LINE}" >> repos.ks ;\
+        OVIRT_REPO_LINE="repo --name=ovirt-stable-repo --baseurl=$(OVIRT_BASE_URL)/fc$(FEDORA)\n" ;\
+        FEDORA_REPO_LOC="repo --name=$${FEDORA_REPO} --mirrorlist=$(FEDORA_MIRROR)?repo=fedora-$(FEDORA)&arch=$(ARCH)\n" ;\
+        UPDATE_REPO_LINE="repo --name=$${FEDORA_REPO}-updates --mirrorlist=$(FEDORA_MIRROR)?repo=updates-released-f$(FEDORA)&arch=$(ARCH)\n" ;\
+        printf "$${OVIRT_REPO_LINE}" > repos.ks ;\
+        printf "$${FEDORA_REPO_LOC}" >> repos.ks ;\
+        printf "$${UPDATE_REPO_LINE}" >> repos.ks ;\
       fi ;\
 	)
 
