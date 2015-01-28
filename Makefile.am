@@ -108,6 +108,11 @@ repos.ks: kickstarts
         printf "$${FEDORA_REPO_LOC}" >> repos.ks ;\
         printf "$${UPDATE_REPO_LINE}" >> repos.ks ;\
       fi ;\
+      echo "# OVIRT_REPO_URL=$(OVIRT_REPO_URL)" >> $@ ;\
+      for repo in $(OVIRT_REPO_URL); do \
+          echo "repo --name=repo$${i} --baseurl=$${repo}" >> $@ ;\
+          i=$${i}_ ;\
+      done ;\
 	)
 
 version.ks: repos.ks $(EXTRA_RECEPIE)
