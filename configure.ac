@@ -1,23 +1,31 @@
-AC_INIT([ovirt-node], [3.5], [node-devel@ovirt.org])
+AC_INIT([ovirt-node], [3.6], [node-devel@ovirt.org])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign -Wno-portability tar-pax])
 
 AC_SUBST([FEDORA],[[`rpm --eval '%{fedora}'|sed 's/[^0-9]//g'`]])
 AC_SUBST([RHEL], [[`rpm --eval '%{rhel}'|sed 's/[^0-9]//g'`]])
 AC_SUBST([CENTOS], [[`rpm --eval '%{centos}'|sed 's/[^0-9]//g'`]])
 AC_SUBST([DISTRO])
+AC_SUBST([DISTRO_SHORT])
 AC_SUBST([PACKAGE_NAME])
 AC_SUBST([PRODUCT_NAME])
+AC_SUBST([REPO_SUFFIX])
+REPO_SUFFIX="master-snapshot"
 
 
 if test "$FEDORA"; then
     DISTRO=ovirt$FEDORA
+    DISTRO_SHORT=fc$FEDORA
 fi
 if test "$RHEL"; then
     DISTRO=rhevh$RHEL
+    DISTRO_SHORT=el$RHEL
 fi
 if test "$CENTOS"; then
     DISTRO=centos$CENTOS
+    DISTRO_SHORT=el$CENTOS
 fi
+
+
 
 AC_ARG_WITH([recipe], [AC_HELP_STRING([--with-recipe],
             [Specify a recipe directory.  Defaults to /usr/share/ovirt-node-recipe])],
@@ -46,5 +54,6 @@ MAIN_KS=ovirt-node-image.ks
 
 
 AC_CONFIG_FILES([Makefile
-                ovirt-node-iso.spec])
+                ovirt-node-iso.spec
+                recepie-downloader.sh])
 AC_OUTPUT

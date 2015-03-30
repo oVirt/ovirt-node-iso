@@ -31,6 +31,7 @@ ARCH              = $(shell rpm --eval '%{_arch}')
 RELEASE 		  := $(shell rpm -q --qf "%{RELEASE}\n" --define "BUILD_NUMBER $(BUILD_NUMBER)" --specfile ./ovirt-node-iso.spec | head -n1)
 RECIPE_DIR 		  = @RECIPES@
 OVIRT_VERSION     = @PACKAGE_VERSION@
+REPO_SUFFIX        = @REPO_SUFFIX@
 
 OVIRT_CACHE_DIR	?= $(HOME)/ovirt-caches
 
@@ -55,7 +56,7 @@ DISTCLEANFILES = $(PACKAGE)-$(VERSION).tar.gz \
 # then check PATH
 NODE_CREATOR      = $(shell ( test -e $(RECIPE_DIR)/node-creator && echo "$(RECIPE_DIR)/node-creator" ) || ( test -e node-creator && echo "./node-creator" ) || which node-creator 2>/dev/null)
 FEDORA_MIRROR     = http://mirrors.fedoraproject.org/mirrorlist
-OVIRT_BASE_URL    = http://resources.ovirt.org/pub/ovirt-$(OVIRT_VERSION)/rpm
+OVIRT_BASE_URL    = http://resources.ovirt.org/pub/ovirt-$(REPO_SUFFIX)/rpm
 CENTOS_MIRROR     = http://mirrorlist.centos.org/
 
 # For Release: 0..., set _ovirt_dev=1 so that we get extra_release.GIT-
@@ -94,7 +95,7 @@ repos.ks: kickstarts
         UPDATES_REPO_LINE="repo --name=centos-updates --mirrorlist=$(CENTOS_MIRROR)?release=$(CENTOS)&arch=${ARCH}&repo=updates \n" ;\
         EPEL_REPO_LINE="repo --name=epel --baseurl=http://dl.fedoraproject.org/pub/epel/$(CENTOS)/${ARCH} \n" ;\
         OVIRT_REPO_LINE="repo --name=ovirt-repo --baseurl=$(OVIRT_BASE_URL)/el$(CENTOS)\n" ;\
-        GLUSTER_REPO_LINE="repo --name=ovirt-$(OVIRT_VERSION)-glusterfs-${ARCH}-epel --baseurl=http://download.gluster.org/pub/gluster/glusterfs/LATEST/EPEL.repo/epel-$(CENTOS)/${ARCH}\n" ;\
+        GLUSTER_REPO_LINE="repo --name=ovirt-$(OVIRT_VERSION)-glusterfs-${ARCH}-epel --baseurl=http://download.gluster.org/pub/gluster/glusterfs/nightly/glusterfs/epel-$(CENTOS)-${ARCH}\n" ;\
         printf "$${CENTOS_REPO_LINE}" > repos.ks ;\
         printf "$${UPDATES_REPO_LINE}" >> repos.ks ;\
         printf "$${EPEL_REPO_LINE}" >> repos.ks ;\

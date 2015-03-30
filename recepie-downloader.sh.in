@@ -1,0 +1,23 @@
+#!/bin/bash -xe
+
+DISTRO_SHORT=@DISTRO_SHORT@
+OVIRT_REPO_SUFFIX=@REPO_SUFFIX@
+
+case $1 in
+	"install")
+		sudo yum-config-manager --add-repo "http://resources.ovirt.org/pub/ovirt-$OVIRT_REPO_SUFFIX/rpm/$DISTRO_SHORT"
+		sudo yum install ovirt-node-recipe -y --nogpgcheck
+		;;
+	"remove")
+		sudo yum erase ovirt-node-recipe -y
+		;;
+	"remove-repo")
+		sudo rm -rf /etc/yum.repos.d/resources.ovirt.org*.repo
+		;;
+	*)
+		echo "Usage is :"
+		echo "      install - will create the repo and install recepies"
+		echo "      remove - will remove the recepies"
+		echo "      remove-repo - will remove the ovirt repos from /etc/yum.repos.d"
+		;;
+esac
