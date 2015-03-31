@@ -7,9 +7,11 @@ case $1 in
 	"install")
 		sudo yum-config-manager --add-repo "http://resources.ovirt.org/pub/ovirt-$OVIRT_REPO_SUFFIX/rpm/$DISTRO_SHORT"
 		sudo yum install ovirt-node-recipe -y --nogpgcheck
+		sudo yum install ovirt-node-plugin-vdsm-recipe -y --nogpgcheck
 		;;
 	"remove")
 		sudo yum erase ovirt-node-recipe -y
+		sudo yum erase ovirt-node-plugin-vdsm-recipe -y
 		;;
 	"remove-repo")
 		sudo rm -rf /etc/yum.repos.d/resources.ovirt.org*.repo

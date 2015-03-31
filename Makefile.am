@@ -16,7 +16,7 @@
 # also available at http://www.gnu.org/copyleft/gpl.html.
 
 PACKAGE           = @PACKAGE_NAME@
-NAME0			  = ovirt-node-image
+NAME0             = @MAIN_KS@
 RECIPE            = $(PACKAGE).ks
 PRODUCT           = @PRODUCT_NAME@
 EXTRA_RECIPE      = @EXTRA_RECIPE@
@@ -28,27 +28,27 @@ DISTRO            = @DISTRO@
 BUILD_TYPE        ?= STABLE
 CENTOS            = @CENTOS@
 ARCH              = $(shell rpm --eval '%{_arch}')
-RELEASE 		  := $(shell rpm -q --qf "%{RELEASE}\n" --define "BUILD_NUMBER $(BUILD_NUMBER)" --specfile ./ovirt-node-iso.spec | head -n1)
-RECIPE_DIR 		  = @RECIPES@
+RELEASE           := $(shell rpm -q --qf "%{RELEASE}\n" --define "BUILD_NUMBER $(BUILD_NUMBER)" --specfile ./ovirt-node-iso.spec | head -n1)
+RECIPE_DIR        = @RECIPES@
 OVIRT_VERSION     = @PACKAGE_VERSION@
-REPO_SUFFIX        = @REPO_SUFFIX@
+REPO_SUFFIX       = @REPO_SUFFIX@
 
-OVIRT_CACHE_DIR	?= $(HOME)/ovirt-caches
+OVIRT_CACHE_DIR ?= $(HOME)/ovirt-caches
 
 EXTRA_DIST = \
-	ovirt-node-iso.spec.in       \
-	ovirt-node-iso.spec          \
-	$(PACKAGE)-$(VERSION)-$(RELEASE).iso
+    ovirt-node-iso.spec.in       \
+    ovirt-node-iso.spec          \
+    $(PACKAGE)-$(VERSION)-$(RELEASE).iso
 
 DISTCLEANFILES = $(PACKAGE)-$(VERSION).tar.gz \
-				 repos.ks \
-				 Makefile.in \
-				 aclocal.m4 \
-				 autom4te.cache \
-				 configure \
-				 install-sh \
-				 missing \
-				 *.ks
+                 repos.ks \
+                 Makefile.in \
+                 aclocal.m4 \
+                 autom4te.cache \
+                 configure \
+                 install-sh \
+                 missing \
+                 *.ks
 
 # Need to find node-creator script
 # Default to RECIPE_DIR/node-creator
@@ -63,7 +63,7 @@ CENTOS_MIRROR     = http://mirrorlist.centos.org/
 # annotated rpm version strings.
 _ovirt_dev = \
  $(shell grep -q '^[[:space:]]*Release:[[:space:]]*[0-9\.]*999' \
-   $(top_srcdir)/*.spec && echo 1 || :)
+ $(top_srcdir)/*.spec && echo 1 || :)
 
 rpms: dist
 	rpmbuild --define "BUILD_NUMBER $(BUILD_NUMBER)" $(RPM_FLAGS) -ta $(distdir).tar.gz
@@ -87,11 +87,12 @@ clean_ks:
 kickstarts: clean_ks node-creator
 	cp $(RECIPE_DIR)/*.ks .
 	rm -f version.ks
+	@test -e "${NAME0}" || ( echo "Error main kickstart file missing - ${NAME0}" && exit 1 )
 
 repos.ks: kickstarts
 	( \
       if [ -n "$(CENTOS)" ]; then \
-        CENTOS_REPO_LINE="repo --name=centos --mirrorlist=$(CENTOS_MIRROR)?release=$(CENTOS)&arch=${ARCH}&repo=os \n" ;\
+         CENTOS_REPO_LINE="repo --name=centos --mirrorlist=$(CENTOS_MIRROR)?release=$(CENTOS)&arch=${ARCH}&repo=os \n" ;\
         UPDATES_REPO_LINE="repo --name=centos-updates --mirrorlist=$(CENTOS_MIRROR)?release=$(CENTOS)&arch=${ARCH}&repo=updates \n" ;\
         EPEL_REPO_LINE="repo --name=epel --baseurl=http://dl.fedoraproject.org/pub/epel/$(CENTOS)/${ARCH} \n" ;\
         OVIRT_REPO_LINE="repo --name=ovirt-repo --baseurl=$(OVIRT_BASE_URL)/el$(CENTOS)\n" ;\
@@ -106,29 +107,34 @@ repos.ks: kickstarts
         FEDORA_REPO_LOC="repo --name=$${FEDORA_REPO} --mirrorlist=$(FEDORA_MIRROR)?repo=fedora-$(FEDORA)&arch=$(ARCH)\n" ;\
         UPDATE_REPO_LINE="repo --name=$${FEDORA_REPO}-updates --mirrorlist=$(FEDORA_MIRROR)?repo=updates-released-f$(FEDORA)&arch=$(ARCH)\n" ;\
         VIRT_PREVIEW_REPO_LINE="repo --name=$${FEDORA_REPO}-virt-preview --baseurl=https://fedorapeople.org/groups/virt/virt-preview/fedora-$(FEDORA)/$(ARCH)/\n" ;\
+        GLUSTER_REPO_LINE="repo --name=ovirt-$(OVIRT_VERSION)-glusterfs-${ARCH}-epel --baseurl=http://download.gluster.org/pub/gluster/glusterfs/nightly/glusterfs/fedora-$(FEDORA)-${ARCH}\n" ;\
         printf "$${OVIRT_REPO_LINE}" > repos.ks ;\
         printf "$${FEDORA_REPO_LOC}" >> repos.ks ;\
         printf "$${UPDATE_REPO_LINE}" >> repos.ks ;\
-      fi ;\
-      echo "# OVIRT_REPO_URL=$(OVIRT_REPO_URL)" >> $@ ;\
-      for repo in $(OVIRT_REPO_URL); do \
+        printf "$${GLUSTER_REPO_LINE}" >> repos.ks ;\
+        printf "$${VIRT_PREVIEW_REPO_LINE}" >> repos.ks ;\
+        fi ;\
+        echo "# OVIRT_REPO_URL=$(OVIRT_REPO_URL)" >> $@ ;\
+        for repo in $(OVIRT_REPO_URL); do \
           echo "repo --name=repo$${i} --baseurl=$${repo}" >> $@ ;\
           i=$${i}_ ;\
-      done ;\
-	)
+        done ;\
+    )
 
 version.ks: repos.ks $(EXTRA_RECEPIE)
 	( \
-	    echo "PRODUCT='"$(PRODUCT)"'" ;\
-	    echo "PRODUCT_SHORT='"$(PRODUCT_SHORT)"'" ;\
-	    echo "PACKAGE=$(PACKAGE)" ;\
-	    echo "VERSION=$(VERSION)" ;\
-	    echo "RELEASE=$(RELEASE)" ;\
-	) > $@
+        echo "PRODUCT='"$(PRODUCT)"'" ;\
+        echo "PRODUCT_SHORT='"$(PRODUCT_SHORT)"'" ;\
+        echo "PACKAGE=$(PACKAGE)" ;\
+        echo "VERSION=$(VERSION)" ;\
+        echo "RELEASE=$(RELEASE)" ;\
+    ) > $@
+	cat $(NAME0) > tmp-recepie.ks
 if USE_EXTRA_RECIPE
-	echo -e "\n%include $(EXTRA_RECIPE)" >> $(NAME0).ks
+	echo -e "\n%include $(EXTRA_RECIPE)" >> tmp-recepie.ks
 endif
-	ksflatten -c $(NAME0).ks -o $(PACKAGE).ks
+	ksflatten -c tmp-recepie.ks -o $(PACKAGE).ks
+	rm -rf tmp-recepie.ks
 
 $(PACKAGE).$(PKG_FMT) iso: kickstarts version.ks repos.ks
 	@test ! -e "$(PACKAGE_NAME)-$(VERSION)-$(RELEASE).iso" || ( echo "ERROR: $(PACKAGE_NAME)-$(VERSION)-$(RELEASE).iso already exists." && exit 1 )
@@ -145,4 +151,4 @@ node-creator:
 
 all: $(PACKAGE).ks
 
-.PHONY: $(PACKAGE).ks
+.PHONY: $(PACKAGE).ks kickstarts
