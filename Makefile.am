@@ -105,6 +105,7 @@ repos.ks: kickstarts
         OVIRT_REPO_LINE="repo --name=ovirt-stable-repo --baseurl=$(OVIRT_BASE_URL)/fc$(FEDORA)\n" ;\
         FEDORA_REPO_LOC="repo --name=$${FEDORA_REPO} --mirrorlist=$(FEDORA_MIRROR)?repo=fedora-$(FEDORA)&arch=$(ARCH)\n" ;\
         UPDATE_REPO_LINE="repo --name=$${FEDORA_REPO}-updates --mirrorlist=$(FEDORA_MIRROR)?repo=updates-released-f$(FEDORA)&arch=$(ARCH)\n" ;\
+        VIRT_PREVIEW_REPO_LINE="repo --name=$${FEDORA_REPO}-virt-preview --baseurl=https://fedorapeople.org/groups/virt/virt-preview/fedora-$(FEDORA)/$(ARCH)/\n" ;\
         printf "$${OVIRT_REPO_LINE}" > repos.ks ;\
         printf "$${FEDORA_REPO_LOC}" >> repos.ks ;\
         printf "$${UPDATE_REPO_LINE}" >> repos.ks ;\

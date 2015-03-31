@@ -50,7 +50,7 @@ AM_CONDITIONAL([USE_EXTRA_RECIPE],[test x$use_extra_recipe = xtrue])
 
 PACKAGE_NAME=ovirt-node-iso
 PRODUCT_NAME=oVirt\ Node\ Hypervisor
-MAIN_KS=ovirt-node-image.ks
+MAIN_KS=vdsm-plugin-iso.ks
 
 
 AC_CONFIG_FILES([Makefile
