@@ -1,6 +1,7 @@
 *.iso
 ovirt-node-iso.spec
 .*.swp
+*.ks
 *~
 aclocal.m4
 autom4te.cache
@@ -12,4 +13,4 @@ missing
 *.tar.gz
 Makefile.in
 Makefile
-repos.ks
+recepie-downloader.sh
