@@ -9,7 +9,7 @@ AC_SUBST([DISTRO_SHORT])
 AC_SUBST([PACKAGE_NAME])
 AC_SUBST([PRODUCT_NAME])
 AC_SUBST([REPO_SUFFIX])
-REPO_SUFFIX="master-snapshot"
+REPO_SUFFIX="3.6-snapshot"
 
 
 if test "$FEDORA"; then
