@@ -22,9 +22,6 @@ PRODUCT           = @PRODUCT_NAME@
 EXTRA_RECIPE      = @EXTRA_RECIPE@
 PRODUCT_SHORT     ?= $(PRODUCT)
 PKG_FMT           = iso
-FEDORA            = @FEDORA@
-RHEL              = @RHEL@
-DISTRO            = @DISTRO@
 BUILD_TYPE        ?= STABLE
 CENTOS            = @CENTOS@
 ARCH              = $(shell rpm --eval '%{_arch}')
@@ -91,34 +88,21 @@ kickstarts: clean_ks node-creator
 
 repos.ks: kickstarts
 	( \
-      if [ -n "$(CENTOS)" ]; then \
-         CENTOS_REPO_LINE="repo --name=centos --mirrorlist=$(CENTOS_MIRROR)?release=$(CENTOS)&arch=${ARCH}&repo=os \n" ;\
-        UPDATES_REPO_LINE="repo --name=centos-updates --mirrorlist=$(CENTOS_MIRROR)?release=$(CENTOS)&arch=${ARCH}&repo=updates \n" ;\
-        EPEL_REPO_LINE="repo --name=epel --baseurl=http://dl.fedoraproject.org/pub/epel/$(CENTOS)/${ARCH} \n" ;\
-        OVIRT_REPO_LINE="repo --name=ovirt-repo --baseurl=$(OVIRT_BASE_URL)/el$(CENTOS)\n" ;\
-        GLUSTER_REPO_LINE="repo --name=ovirt-$(OVIRT_VERSION)-glusterfs-${ARCH}-epel --baseurl=http://download.gluster.org/pub/gluster/glusterfs/nightly/glusterfs/epel-$(CENTOS)-${ARCH}\n" ;\
-        printf "$${CENTOS_REPO_LINE}" > repos.ks ;\
-        printf "$${UPDATES_REPO_LINE}" >> repos.ks ;\
-        printf "$${EPEL_REPO_LINE}" >> repos.ks ;\
-        printf "$${OVIRT_REPO_LINE}" >> repos.ks ;\
-        printf "$${GLUSTER_REPO_LINE}" >> repos.ks ;\
-      elif [ -n "$(FEDORA)" ]; then \
-        OVIRT_REPO_LINE="repo --name=ovirt-stable-repo --baseurl=$(OVIRT_BASE_URL)/fc$(FEDORA)\n" ;\
-        FEDORA_REPO_LOC="repo --name=$${FEDORA_REPO} --mirrorlist=$(FEDORA_MIRROR)?repo=fedora-$(FEDORA)&arch=$(ARCH)\n" ;\
-        UPDATE_REPO_LINE="repo --name=$${FEDORA_REPO}-updates --mirrorlist=$(FEDORA_MIRROR)?repo=updates-released-f$(FEDORA)&arch=$(ARCH)\n" ;\
-        VIRT_PREVIEW_REPO_LINE="repo --name=$${FEDORA_REPO}-virt-preview --baseurl=https://fedorapeople.org/groups/virt/virt-preview/fedora-$(FEDORA)/$(ARCH)/\n" ;\
-        GLUSTER_REPO_LINE="repo --name=ovirt-$(OVIRT_VERSION)-glusterfs-${ARCH}-epel --baseurl=http://download.gluster.org/pub/gluster/glusterfs/nightly/glusterfs/fedora-$(FEDORA)-${ARCH}\n" ;\
-        printf "$${OVIRT_REPO_LINE}" > repos.ks ;\
-        printf "$${FEDORA_REPO_LOC}" >> repos.ks ;\
-        printf "$${UPDATE_REPO_LINE}" >> repos.ks ;\
-        printf "$${GLUSTER_REPO_LINE}" >> repos.ks ;\
-        printf "$${VIRT_PREVIEW_REPO_LINE}" >> repos.ks ;\
-        fi ;\
-        echo "# OVIRT_REPO_URL=$(OVIRT_REPO_URL)" >> $@ ;\
-        for repo in $(OVIRT_REPO_URL); do \
-          echo "repo --name=repo$${i} --baseurl=$${repo}" >> $@ ;\
-          i=$${i}_ ;\
-        done ;\
+      CENTOS_REPO_LINE="repo --name=centos --mirrorlist=$(CENTOS_MIRROR)?release=$(CENTOS)&arch=${ARCH}&repo=os \n" ;\
+      UPDATES_REPO_LINE="repo --name=centos-updates --mirrorlist=$(CENTOS_MIRROR)?release=$(CENTOS)&arch=${ARCH}&repo=updates \n" ;\
+      EPEL_REPO_LINE="repo --name=epel --baseurl=http://dl.fedoraproject.org/pub/epel/$(CENTOS)/${ARCH} \n" ;\
+      OVIRT_REPO_LINE="repo --name=ovirt-repo --baseurl=$(OVIRT_BASE_URL)/el$(CENTOS)\n" ;\
+      GLUSTER_REPO_LINE="repo --name=ovirt-$(OVIRT_VERSION)-glusterfs-${ARCH}-epel --baseurl=http://download.gluster.org/pub/gluster/3.7/LATEST/EPEL.repo/epel-$(CENTOS)-${ARCH}\n" ;\
+      printf "$${CENTOS_REPO_LINE}" > repos.ks ;\
+      printf "$${UPDATES_REPO_LINE}" >> repos.ks ;\
+      printf "$${EPEL_REPO_LINE}" >> repos.ks ;\
+      printf "$${OVIRT_REPO_LINE}" >> repos.ks ;\
+      printf "$${GLUSTER_REPO_LINE}" >> repos.ks ;\
+      echo "# OVIRT_REPO_URL=$(OVIRT_REPO_URL)" >> $@ ;\
+      for repo in $(OVIRT_REPO_URL); do \
+        echo "repo --name=repo$${i} --baseurl=$${repo}" >> $@ ;\
+        i=$${i}_ ;\
+      done ;\
     )
 
 version.ks: repos.ks $(EXTRA_RECEPIE)
