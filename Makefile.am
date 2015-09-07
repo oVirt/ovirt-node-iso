@@ -92,7 +92,7 @@ repos.ks: kickstarts
       UPDATES_REPO_LINE="repo --name=centos-updates --mirrorlist=$(CENTOS_MIRROR)?release=$(CENTOS)&arch=${ARCH}&repo=updates \n" ;\
       EPEL_REPO_LINE="repo --name=epel --baseurl=http://dl.fedoraproject.org/pub/epel/$(CENTOS)/${ARCH} \n" ;\
       OVIRT_REPO_LINE="repo --name=ovirt-repo --baseurl=$(OVIRT_BASE_URL)/el$(CENTOS)\n" ;\
-      GLUSTER_REPO_LINE="repo --name=ovirt-$(OVIRT_VERSION)-glusterfs-${ARCH}-epel --baseurl=http://download.gluster.org/pub/gluster/3.7/LATEST/EPEL.repo/epel-$(CENTOS)-${ARCH}\n" ;\
+      GLUSTER_REPO_LINE="repo --name=ovirt-$(OVIRT_VERSION)-glusterfs-${ARCH}-epel --baseurl=http://download.gluster.org/pub/gluster/glusterfs/3.7/LATEST/EPEL.repo/epel-$(CENTOS)/${ARCH}\n repo --name=ovirt-$(OVIRT_VERSION)-glusterfs-noarch-epel --baseurl=http://download.gluster.org/pub/gluster/glusterfs/3.7/LATEST/EPEL.repo/epel-$(CENTOS)/noarch \n" ;\
       printf "$${CENTOS_REPO_LINE}" > repos.ks ;\
       printf "$${UPDATES_REPO_LINE}" >> repos.ks ;\
       printf "$${EPEL_REPO_LINE}" >> repos.ks ;\
