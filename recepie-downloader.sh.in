@@ -10,8 +10,8 @@ case $1 in
 		sudo yum install ovirt-node-plugin-vdsm-recipe -y --nogpgcheck
 		;;
 	"remove")
-		sudo yum erase ovirt-node-recipe -y
-		sudo yum erase ovirt-node-plugin-vdsm-recipe -y
+		sudo yum erase ovirt-node-plugin-vdsm-recipe -y || :
+		sudo yum erase ovirt-node-recipe -y || :
 		;;
 	"remove-repo")
 		sudo rm -rf /etc/yum.repos.d/resources.ovirt.org*.repo
