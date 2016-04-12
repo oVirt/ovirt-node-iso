@@ -54,6 +54,7 @@ DISTCLEANFILES = $(PACKAGE)-$(VERSION).tar.gz \
 NODE_CREATOR      = $(shell ( test -e $(RECIPE_DIR)/node-creator && echo "$(RECIPE_DIR)/node-creator" ) || ( test -e node-creator && echo "./node-creator" ) || which node-creator 2>/dev/null)
 FEDORA_MIRROR     = http://mirrors.fedoraproject.org/mirrorlist
 OVIRT_BASE_URL    = http://resources.ovirt.org/pub/ovirt-$(REPO_SUFFIX)/rpm
+OVIRT_STATIC_URL    = http://resources.ovirt.org/pub/ovirt-$(REPO_SUFFIX)-static/rpm
 CENTOS_MIRROR     = http://mirrorlist.centos.org/
 KVM_REPO          = http://cbs.centos.org/repos/virt7-kvm-common-candidate/x86_64/os/
 
@@ -94,12 +95,14 @@ repos.ks: kickstarts
          UPDATES_REPO_LINE="repo --name=centos-updates --mirrorlist=$(CENTOS_MIRROR)?release=$(CENTOS)&arch=${ARCH}&repo=updates \n" ;\
          EPEL_REPO_LINE="repo --name=epel --baseurl=http://dl.fedoraproject.org/pub/epel/$(CENTOS)/${ARCH} \n" ;\
          OVIRT_REPO_LINE="repo --name=ovirt-repo --baseurl=$(OVIRT_BASE_URL)/el$(CENTOS)\n" ;\
+         OVIRT_STATIC_LINE="repo --name=ovirt-repo-static --baseurl=$(OVIRT_STATIC_URL)/el$(CENTOS)\n" ;\
          GLUSTER_REPO_LINE="repo --name=ovirt-$(OVIRT_VERSION)-glusterfs-${ARCH}-epel --baseurl=http://mirror.centos.org/centos/$(CENTOS)/storage/${ARCH}/gluster-3.7 \n" ;\
          KVM_REPO_LINE="repo --name=kvm --baseurl=$(KVM_REPO) \n";\
          printf "$${CENTOS_REPO_LINE}" > repos.ks ;\
          printf "$${UPDATES_REPO_LINE}" >> repos.ks ;\
          printf "$${EPEL_REPO_LINE}" >> repos.ks ;\
          printf "$${OVIRT_REPO_LINE}" >> repos.ks ;\
+         printf "$${OVIRT_STATIC_LINE}" >> repos.ks ;\
          printf "$${GLUSTER_REPO_LINE}" >> repos.ks ;\
          printf "$${KVM_REPO_LINE}" >> repos.ks ;\
       fi; \
